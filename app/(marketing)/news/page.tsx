@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { CalendarDays, MapPin, ArrowRight, Clock } from 'lucide-react'
 import { PageHero } from '@/components/site/page-hero'
 import { SectionHeading } from '@/components/site/section-heading'
@@ -30,6 +31,7 @@ export default function NewsPage() {
         title="News & events"
         description="Announcements, research updates, partnerships, and gatherings from across the AMTMTI community."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'News' }]}
+        bgImage="/images/news_hero.png"
       />
 
       {/* Featured + grid */}
@@ -38,20 +40,29 @@ export default function NewsPage() {
           {/* Featured */}
           <Link
             href={`/news/${featured.slug}`}
-            className="group grid overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-lg lg:grid-cols-2"
+            className="group grid overflow-hidden rounded-none border border-border bg-card transition hover:shadow-lg lg:grid-cols-2"
           >
-            <div className="relative aspect-[16/10] bg-primary lg:aspect-auto">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage:
-                    'radial-gradient(currentColor 1px, transparent 1px)',
-                  backgroundSize: '20px 20px',
-                  color: 'var(--color-primary-foreground)',
-                }}
-              />
-              <div className="absolute left-4 top-4">
+            <div className="relative aspect-[16/10] bg-primary lg:aspect-auto min-h-[240px]">
+              {featured.image ? (
+                <Image
+                  src={featured.image}
+                  alt={featured.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div
+                  aria-hidden
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage:
+                      'radial-gradient(currentColor 1px, transparent 1px)',
+                    backgroundSize: '20px 20px',
+                    color: 'var(--color-primary-foreground)',
+                  }}
+                />
+              )}
+              <div className="absolute left-4 top-4 z-10">
                 <Badge className={categoryColor[featured.category]}>
                   {featured.category}
                 </Badge>
@@ -87,10 +98,18 @@ export default function NewsPage() {
               <Link
                 key={item.slug}
                 href={`/news/${item.slug}`}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
+                className="group flex flex-col overflow-hidden rounded-none border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="relative aspect-[16/9] bg-muted">
-                  <div className="absolute left-3 top-3">
+                <div className="relative aspect-[16/9] bg-muted overflow-hidden">
+                  {item.image ? (
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : null}
+                  <div className="absolute left-3 top-3 z-10">
                     <Badge className={categoryColor[item.category]}>
                       {item.category}
                     </Badge>
@@ -128,7 +147,7 @@ export default function NewsPage() {
             {EVENTS.map((event) => (
               <div
                 key={event.slug}
-                className="flex flex-col rounded-2xl border border-border bg-card p-6"
+                className="flex flex-col rounded-none border border-border bg-card p-6"
               >
                 <Badge variant="secondary" className="self-start">
                   {event.mode}

@@ -12,7 +12,7 @@ export default async function ProfilePage() {
           Manage your personal information and account details.
         </p>
       </div>
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-none border border-border bg-card p-6">
         <ProfileForm
           initial={{
             full_name: profile.full_name ?? "",

@@ -42,18 +42,18 @@ export default async function PaymentsPage() {
         </p>
       </div>
 
-      <div className="mb-6 rounded-xl border border-border bg-card p-5">
+      <div className="mb-6 rounded-none border border-border bg-card p-5">
         <p className="text-sm font-medium text-muted-foreground">Total confirmed</p>
         <p className="mt-1 text-3xl font-semibold text-foreground">{ksh(totalPaid)}</p>
       </div>
 
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-none border border-dashed border-border bg-card p-12 text-center">
           <CreditCard className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-4 text-sm text-muted-foreground">No payment records yet.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border bg-card">
+        <div className="overflow-hidden rounded-none border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

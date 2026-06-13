@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import {
   ShieldPlus,
   Stethoscope,
@@ -65,6 +66,7 @@ export default function ResearchPage() {
         title="Building the African evidence base for MTM"
         description="We generate rigorous, locally relevant research that drives safer medication use and informs policy across the continent."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Research' }]}
+        bgImage="/images/hero-medical-professionals.png"
       />
 
       {/* Stats */}
@@ -95,17 +97,29 @@ export default function ResearchPage() {
               return (
                 <div
                   key={area.title}
-                  className="rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:shadow-lg"
+                  className="flex flex-col rounded-none border border-border bg-card overflow-hidden transition hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-secondary/12 text-secondary">
-                    {Icon && <Icon className="size-5" />}
+                  <div className="relative aspect-[16/9] w-full bg-muted">
+                    {area.image && (
+                      <Image
+                        src={area.image}
+                        alt={area.title}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
-                  <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
-                    {area.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {area.description}
-                  </p>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex size-11 items-center justify-center rounded-xl bg-secondary/12 text-secondary">
+                      {Icon && <Icon className="size-5" />}
+                    </div>
+                    <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
+                      {area.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground flex-1">
+                      {area.description}
+                    </p>
+                  </div>
                 </div>
               )
             })}
@@ -128,7 +142,7 @@ export default function ResearchPage() {
             {PUBLICATIONS.map((pub) => (
               <article
                 key={pub.title}
-                className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-none border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex items-start gap-4">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -200,7 +214,7 @@ export default function ResearchPage() {
               partnerships. Share your idea and our Research Division will respond.
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="rounded-none border border-border bg-card p-6 sm:p-8">
             <ContactForm defaultSubject="Research proposal" compact />
           </div>
         </div>

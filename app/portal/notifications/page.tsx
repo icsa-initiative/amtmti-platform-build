@@ -29,14 +29,14 @@ export default async function NotificationsPage() {
       </div>
 
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-none border border-dashed border-border bg-card p-12 text-center">
           <Bell className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-4 text-sm text-muted-foreground">You have no notifications.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
           {list.map((n) => (
-            <div key={n.id} className="rounded-xl border border-border bg-card p-5">
+            <div key={n.id} className="rounded-none border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

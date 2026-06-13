@@ -11,6 +11,7 @@ export function PageHero({
   breadcrumbs,
   className,
   children,
+  bgImage,
 }: {
   eyebrow?: string
   title: string
@@ -18,6 +19,7 @@ export function PageHero({
   breadcrumbs?: Crumb[]
   className?: string
   children?: React.ReactNode
+  bgImage?: string
 }) {
   return (
     <section
@@ -25,6 +27,15 @@ export function PageHero({
         'relative overflow-hidden border-b border-border bg-primary text-primary-foreground',
         className,
       )}
+      style={
+        bgImage
+          ? {
+              backgroundImage: `linear-gradient(to right, oklch(0.42 0.11 250 / 94%), oklch(0.42 0.11 250 / 82%)), url(${bgImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          : undefined
+      }
     >
       <div
         aria-hidden

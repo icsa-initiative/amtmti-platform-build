@@ -15,7 +15,7 @@ export function StatCard({
   className?: string
 }) {
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
+    <div className={cn("rounded-none border border-border bg-card p-5", className)}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Award,
   ShieldCheck,
@@ -46,38 +47,49 @@ export default function AboutPage() {
         title="Advancing safer medication use across Africa"
         description={`${SITE.fullName} is a continent-wide institute dedicated to world-class education, research, and community in medication therapy management.`}
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]}
+        bgImage="/images/about_hero.png"
       />
 
       {/* Mission & Vision */}
       <section className="bg-background py-16 sm:py-20">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-8">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Target className="size-6" />
-            </div>
-            <h2 className="mt-5 font-heading text-2xl font-bold text-foreground">
-              Our Mission
-            </h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">
-              To deliver accessible, world-class education and skills enhancement
-              training in medication therapy management, equipping Africa&apos;s
-              healthcare workforce to improve medication outcomes for every
-              patient.
-            </p>
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-12 items-center">
+          <div className="lg:col-span-5 relative aspect-[4/3] w-full overflow-hidden rounded-none border border-border bg-muted">
+            <Image
+              src="/images/about-mission.png"
+              alt="AMTMTI mission"
+              fill
+              className="object-cover"
+            />
           </div>
-          <div className="rounded-2xl border border-border bg-card p-8">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-secondary/12 text-secondary">
-              <Eye className="size-6" />
+          <div className="lg:col-span-7 grid gap-6">
+            <div className="rounded-none border border-border bg-card p-8">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Target className="size-6" />
+              </div>
+              <h2 className="mt-5 font-heading text-2xl font-bold text-foreground">
+                Our Mission
+              </h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                To deliver accessible, world-class education and skills enhancement
+                training in medication therapy management, equipping Africa&apos;s
+                healthcare workforce to improve medication outcomes for every
+                patient.
+              </p>
             </div>
-            <h2 className="mt-5 font-heading text-2xl font-bold text-foreground">
-              Our Vision
-            </h2>
-            <p className="mt-3 leading-relaxed text-muted-foreground">
-              A continent where medication therapy management is embedded in
-              every level of care — driven by African-led research, a thriving
-              professional community, and the highest standards of patient
-              safety.
-            </p>
+            <div className="rounded-none border border-border bg-card p-8">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-secondary/12 text-secondary">
+                <Eye className="size-6" />
+              </div>
+              <h2 className="mt-5 font-heading text-2xl font-bold text-foreground">
+                Our Vision
+              </h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                A continent where medication therapy management is embedded in
+                every level of care — driven by African-led research, a thriving
+                professional community, and the highest standards of patient
+                safety.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -96,7 +108,7 @@ export default function AboutPage() {
               return (
                 <div
                   key={value.title}
-                  className="rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:shadow-lg"
+                  className="rounded-none border border-border bg-card p-6 transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="flex size-11 items-center justify-center rounded-xl bg-gold/20 text-gold-foreground">
                     {Icon && <Icon className="size-5" />}
@@ -156,7 +168,7 @@ export default function AboutPage() {
           <h2 className="mt-2 max-w-2xl text-balance font-heading text-3xl font-bold sm:text-4xl">
             Our strategic objectives for the decade
           </h2>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-primary-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-px overflow-hidden rounded-none bg-primary-foreground/10 sm:grid-cols-2 lg:grid-cols-3">
             {STRATEGIC_OBJECTIVES.map((obj) => (
               <div key={obj.title} className="bg-primary p-7">
                 <span className="font-heading text-3xl font-bold text-gold">
@@ -189,7 +201,7 @@ export default function AboutPage() {
             {LEADERSHIP.map((person) => (
               <div
                 key={person.name}
-                className="flex flex-col items-center rounded-2xl border border-border bg-card p-6 text-center"
+                className="flex flex-col items-center rounded-none border border-border bg-card p-6 text-center"
               >
                 <Avatar className="size-20">
                   <AvatarFallback className="bg-primary/10 font-heading text-lg font-semibold text-primary">

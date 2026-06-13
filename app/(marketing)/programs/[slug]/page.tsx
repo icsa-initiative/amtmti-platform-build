@@ -99,7 +99,7 @@ export default async function ProgramDetailPage({
               {program.outcomes.map((outcome) => (
                 <li
                   key={outcome}
-                  className="flex items-start gap-3 rounded-xl border border-border bg-card p-4"
+                  className="flex items-start gap-3 rounded-none border border-border bg-card p-4"
                 >
                   <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-secondary" />
                   <span className="text-sm leading-relaxed text-foreground">
@@ -129,7 +129,7 @@ export default async function ProgramDetailPage({
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-xl border border-border bg-card p-5"
+                  className="rounded-none border border-border bg-card p-5"
                 >
                   <h4 className="font-heading text-base font-semibold text-foreground">
                     {item.title}
@@ -144,7 +144,7 @@ export default async function ProgramDetailPage({
 
           {/* Sticky sidebar */}
           <aside className="lg:sticky lg:top-28 lg:self-start">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="rounded-none border border-border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <GraduationCap className="size-6" />

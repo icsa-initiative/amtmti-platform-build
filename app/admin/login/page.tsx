@@ -15,8 +15,15 @@ export default async function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center bg-muted px-4 py-12">
-      <div className="w-full max-w-md">
+    <main className="relative flex min-h-svh flex-col items-center justify-center px-4 py-12 overflow-hidden">
+      {/* Background image & tint */}
+      <div 
+        className="absolute inset-0 bg-muted bg-cover bg-center opacity-20 mix-blend-multiply"
+        style={{ backgroundImage: 'url(/images/admin_background.png)' }}
+      />
+      <div className="absolute inset-0 bg-primary/10 backdrop-blur-[2px]" />
+      
+      <div className="relative w-full max-w-md z-10">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link href="/" aria-label="AMTMTI home">
             <Logo />
@@ -26,7 +33,7 @@ export default async function AdminLoginPage() {
             Restricted area. Authorized AMTMTI staff only.
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <div className="rounded-none border border-border bg-card p-6 shadow-sm sm:p-8">
           <AdminLoginForm />
         </div>
         <p className="mt-6 text-center text-sm text-muted-foreground">
