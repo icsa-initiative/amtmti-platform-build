@@ -9,7 +9,14 @@ import { HERO_STATS } from '@/lib/site-data'
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-primary text-primary-foreground">
+    <section
+      className="relative overflow-hidden bg-primary text-primary-foreground"
+      style={{
+        backgroundImage: 'url(/images/hero.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       {/* Animated background accents */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-24 -top-24 size-96 rounded-full bg-secondary/20 blur-3xl" />
@@ -23,6 +30,8 @@ export function Hero() {
           }}
         />
       </div>
+      {/* Gradient overlay for better text contrast on the hero background */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/70 to-transparent" />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
         <motion.div
@@ -92,7 +101,7 @@ export function Hero() {
         >
           <div className="relative overflow-hidden rounded-3xl ring-1 ring-primary-foreground/15">
             <Image
-              src="/images/hero-professionals.png"
+              src="/images/hero-medical-professionals.png"
               alt="African healthcare professionals collaborating in a clinical pharmacy"
               width={720}
               height={820}
