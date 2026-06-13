@@ -29,8 +29,9 @@ export function PageHero({
       )}
       style={
         bgImage
-          ? {
-              backgroundImage: `linear-gradient(to right, oklch(0.42 0.11 250 / 94%), oklch(0.42 0.11 250 / 82%)), url(${bgImage})`,
+            ? {
+              // Reduce gradient alpha so background image shows through more clearly
+              backgroundImage: `linear-gradient(to right, oklch(0.42 0.11 250 / 12%), oklch(0.42 0.11 250 / 6%)), url(${bgImage})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }

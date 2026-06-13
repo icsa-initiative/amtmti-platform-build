@@ -99,7 +99,8 @@ export function Hero() {
               priority
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+            {/* softened gradient so the image is more visible */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
           </div>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
