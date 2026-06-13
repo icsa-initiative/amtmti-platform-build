@@ -53,7 +53,7 @@ export default function NewsPage() {
               ) : (
                 <div
                   aria-hidden
-                  className="absolute inset-0 opacity-20"
+                  className="absolute inset-0 opacity-10"
                   style={{
                     backgroundImage:
                       'radial-gradient(currentColor 1px, transparent 1px)',

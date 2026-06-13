@@ -10,12 +10,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 text-primary-foreground lg:flex">
         {/* Background image underlay */}
         <div
-          className="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-25"
+          className="absolute inset-0 bg-cover bg-center mix-blend-multiply opacity-12"
           style={{ backgroundImage: 'url(/images/login_signup_hero.jfif)' }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.12]"
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage:
               'radial-gradient(circle at 20% 20%, var(--gold) 0, transparent 45%), radial-gradient(circle at 80% 70%, var(--secondary) 0, transparent 40%)',
