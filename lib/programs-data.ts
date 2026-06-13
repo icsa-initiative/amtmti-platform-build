@@ -10,6 +10,7 @@ export type Program = {
   summary: string
   outcomes: string[]
   featured?: boolean
+  image?: string
 }
 
 export const PROGRAMS: Program[] = [
@@ -30,6 +31,7 @@ export const PROGRAMS: Program[] = [
       'Document MTM interventions effectively',
     ],
     featured: true,
+    image: '/images/MTM_for_Pharmacists.png',
   },
   {
     slug: 'clinical-pharmacy-diploma',
@@ -48,6 +50,7 @@ export const PROGRAMS: Program[] = [
       'Collaborate within multidisciplinary teams',
     ],
     featured: true,
+    image: '/images/clinical_pharmacy.png',
   },
   {
     slug: 'postgraduate-diploma-mtm',
@@ -66,6 +69,7 @@ export const PROGRAMS: Program[] = [
       'Conduct practice-based research',
     ],
     featured: true,
+    image: '/images/Pharmaceutical_care.png',
   },
   {
     slug: 'medication-safety-clinicians',
@@ -84,6 +88,7 @@ export const PROGRAMS: Program[] = [
       'Reduce preventable medication harm',
     ],
     featured: true,
+    image: '/images/MTM_for_Clinicians.png',
   },
   {
     slug: 'adherence-nursing-certificate',
@@ -101,6 +106,7 @@ export const PROGRAMS: Program[] = [
       'Support safe medication administration',
       'Educate patients on therapy plans',
     ],
+    image: '/images/MTM_for_Nurses.png',
   },
   {
     slug: 'dispensing-technicians-certificate',
@@ -118,6 +124,7 @@ export const PROGRAMS: Program[] = [
       'Manage pharmaceutical inventory',
       'Support pharmaceutical care delivery',
     ],
+    image: '/images/MTM_for_Pharmaceutical Technicians.jpg',
   },
   {
     slug: 'pharmaceutical-technology-diploma',
@@ -135,6 +142,7 @@ export const PROGRAMS: Program[] = [
       'Support formulation and compounding',
       'Manage the medicines supply chain',
     ],
+    image: '/images/MTM_for_Pharmaceutical Technologists.png',
   },
   {
     slug: 'collaborative-prescribing-physicians',
@@ -152,6 +160,7 @@ export const PROGRAMS: Program[] = [
       'Optimise therapy in complex patients',
       'Collaborate with pharmacy teams',
     ],
+    image: '/images/MTM_for_Physicians.png',
   },
 ]
 

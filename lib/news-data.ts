@@ -7,6 +7,7 @@ export type NewsItem = {
   date: string
   author: string
   readMinutes: number
+  image?: string
 }
 
 export const NEWS: NewsItem[] = [
@@ -16,10 +17,11 @@ export const NEWS: NewsItem[] = [
     category: 'Announcements',
     excerpt:
       'The institute marks a major milestone in its pan-African mission with new partnerships across East and West Africa.',
-    body: 'AMTMTI has formally expanded its accredited medication therapy management programmes to twelve African countries, establishing new training partnerships with leading universities and hospitals. The expansion is part of the institute\u2019s 2030 strategy to train 50,000 healthcare professionals and embed MTM into primary care across the continent.',
+    body: 'AMTMTI has formally expanded its accredited medication therapy management programmes to twelve African countries, establishing new training partnerships with leading universities and hospitals. The expansion is part of the institute’s 2030 strategy to train 50,000 healthcare professionals and embed MTM into primary care across the continent.',
     date: '2026-05-18',
     author: 'AMTMTI Communications',
     readMinutes: 4,
+    image: '/images/news_hero1.png',
   },
   {
     slug: 'medication-safety-trial-results',
@@ -31,6 +33,7 @@ export const NEWS: NewsItem[] = [
     date: '2026-04-30',
     author: 'Dr. Fatima El-Hassan',
     readMinutes: 6,
+    image: '/images/news_hero.png',
   },
   {
     slug: 'partnership-who-afro',
@@ -42,6 +45,7 @@ export const NEWS: NewsItem[] = [
     date: '2026-04-12',
     author: 'AMTMTI Communications',
     readMinutes: 3,
+    image: '/images/logo.jpeg',
   },
   {
     slug: 'annual-mtm-summit-2026',
@@ -53,6 +57,7 @@ export const NEWS: NewsItem[] = [
     date: '2026-03-28',
     author: 'Events Team',
     readMinutes: 2,
+    image: '/images/hero-medical-professionals.png',
   },
   {
     slug: 'new-postgraduate-cohort',
@@ -64,6 +69,7 @@ export const NEWS: NewsItem[] = [
     date: '2026-03-05',
     author: 'Dr. Samuel Okoro',
     readMinutes: 3,
+    image: '/images/about_hero.png',
   },
 ]
 

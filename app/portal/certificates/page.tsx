@@ -22,7 +22,7 @@ export default async function CertificatesPage() {
       </div>
 
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-none border border-dashed border-border bg-card p-12 text-center">
           <Award className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-4 text-sm text-muted-foreground">
             You have not earned any certificates yet. Complete a program to receive one.
@@ -33,7 +33,7 @@ export default async function CertificatesPage() {
           {list.map((c) => (
             <div
               key={c.id}
-              className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-none border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex items-center gap-4">
                 <span className="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">

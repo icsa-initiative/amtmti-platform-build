@@ -98,7 +98,7 @@ export default async function NewsDetailPage({
               <Link
                 key={m.slug}
                 href={`/news/${m.slug}`}
-                className="group flex flex-col rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:shadow-lg"
+                className="group flex flex-col rounded-none border border-border bg-card p-6 transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <Badge variant="secondary" className="self-start">
                   {m.category}

@@ -39,6 +39,7 @@ export default function ContactPage() {
         title="We&apos;d love to hear from you"
         description="Questions about programs, membership, or research? Reach out and our team will respond promptly."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Contact' }]}
+        bgImage="/images/contact_hero.jfif"
       />
 
       <section className="bg-background py-12 sm:py-16">
@@ -48,7 +49,7 @@ export default function ContactPage() {
             {details.map((d) => (
               <div
                 key={d.label}
-                className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5"
+                className="flex items-start gap-4 rounded-none border border-border bg-card p-5"
               >
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <d.icon className="size-5" />
@@ -71,7 +72,7 @@ export default function ContactPage() {
               </div>
             ))}
 
-            <div className="overflow-hidden rounded-2xl border border-border">
+            <div className="overflow-hidden rounded-none border border-border">
               <iframe
                 title="AMTMTI location map"
                 src="https://www.openstreetmap.org/export/embed.html?bbox=36.95%2C-1.16%2C37.02%2C-1.10&layer=mapnik&marker=-1.13%2C36.98"
@@ -82,7 +83,7 @@ export default function ContactPage() {
           </div>
 
           {/* Form */}
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="rounded-none border border-border bg-card p-6 sm:p-8">
             <h2 className="font-heading text-2xl font-bold text-foreground">
               Send us a message
             </h2>

@@ -52,6 +52,7 @@ export default function MembershipPage() {
         title="Become part of the AMTMTI community"
         description="Join a growing pan-African network committed to safer medication use, professional growth, and world-class practice."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Membership' }]}
+        bgImage="/images/membership_hero.png"
       />
 
       {/* Benefits */}
@@ -66,7 +67,7 @@ export default function MembershipPage() {
             {benefits.map((b) => (
               <div
                 key={b.title}
-                className="rounded-2xl border border-border bg-card p-6"
+                className="rounded-none border border-border bg-card p-6"
               >
                 <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <b.icon className="size-5" />
@@ -113,7 +114,7 @@ export default function MembershipPage() {
               chosen tier.
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="rounded-none border border-border bg-card p-6 sm:p-8">
             <MembershipApplyForm />
           </div>
         </div>

@@ -35,7 +35,7 @@ export default async function CoursesPage() {
       </div>
 
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-none border border-dashed border-border bg-card p-12 text-center">
           <GraduationCap className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-4 text-sm text-muted-foreground">
             You have not enrolled in any programs yet.
@@ -47,7 +47,7 @@ export default async function CoursesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {list.map((e) => (
-            <div key={e.id} className="flex flex-col rounded-xl border border-border bg-card p-5">
+            <div key={e.id} className="flex flex-col rounded-none border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <Badge variant="outline" className="text-xs">
                   {e.category_label}

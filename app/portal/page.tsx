@@ -64,7 +64,7 @@ export default async function PortalDashboard() {
           </div>
           <div className="mt-4 flex flex-col gap-3">
             {list.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
+              <div className="rounded-none border border-dashed border-border bg-card p-8 text-center">
                 <p className="text-sm text-muted-foreground">
                   You are not enrolled in any programs yet.
                 </p>
@@ -74,7 +74,7 @@ export default async function PortalDashboard() {
               </div>
             ) : (
               list.slice(0, 4).map((e) => (
-                <div key={e.id} className="rounded-xl border border-border bg-card p-4">
+                <div key={e.id} className="rounded-none border border-border bg-card p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-foreground">{e.program_title}</p>
@@ -103,12 +103,12 @@ export default async function PortalDashboard() {
           </div>
           <div className="mt-4 flex flex-col gap-3">
             {(notifications ?? []).length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center">
+              <div className="rounded-none border border-dashed border-border bg-card p-6 text-center">
                 <p className="text-sm text-muted-foreground">No notifications yet.</p>
               </div>
             ) : (
               (notifications ?? []).map((n) => (
-                <div key={n.id} className="rounded-xl border border-border bg-card p-4">
+                <div key={n.id} className="rounded-none border border-border bg-card p-4">
                   <p className="text-sm font-medium text-foreground text-pretty">{n.title}</p>
                   {n.body ? (
                     <p className="mt-1 text-xs text-muted-foreground text-pretty">{n.body}</p>

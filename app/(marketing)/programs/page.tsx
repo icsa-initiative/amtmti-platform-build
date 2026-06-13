@@ -22,6 +22,7 @@ export default async function ProgramsPage({
         title="Programs built for African healthcare"
         description="Certificates, diplomas, postgraduate pathways, and CPD courses designed around the realities of practice across the continent."
         breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Programs' }]}
+        bgImage="/images/hero-medical-professionals.png"
       />
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-6">

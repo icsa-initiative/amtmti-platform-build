@@ -107,26 +107,31 @@ export const RESEARCH_AREAS = [
     title: 'Medication Safety',
     description: 'Reducing preventable harm through systems-based safety research.',
     icon: 'ShieldPlus',
+    image: '/images/medication_safety.png',
   },
   {
     title: 'Clinical Pharmacy',
     description: 'Advancing the clinical role of pharmacists at the bedside.',
     icon: 'Stethoscope',
+    image: '/images/clinical_pharmacy.png',
   },
   {
     title: 'Pharmaceutical Care',
     description: 'Patient-centred frameworks for comprehensive medicines management.',
     icon: 'HeartPulse',
+    image: '/images/Pharmaceutical_care.png',
   },
   {
     title: 'Public Health',
     description: 'Population-level interventions for rational medicine use.',
     icon: 'Globe2',
+    image: '/images/Public_health.png',
   },
   {
     title: 'Medication Adherence',
     description: 'Behavioural science to improve treatment adherence and outcomes.',
     icon: 'CheckCircle2',
+    image: '/images/medical_adherence.png',
   },
 ] as const
 

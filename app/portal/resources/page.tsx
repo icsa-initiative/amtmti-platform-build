@@ -24,14 +24,14 @@ export default async function ResourcesPage() {
       </div>
 
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card p-12 text-center">
+        <div className="rounded-none border border-dashed border-border bg-card p-12 text-center">
           <FileText className="mx-auto size-10 text-muted-foreground" />
           <p className="mt-4 text-sm text-muted-foreground">No resources available yet.</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((r) => (
-            <div key={r.id} className="flex flex-col rounded-xl border border-border bg-card p-5">
+            <div key={r.id} className="flex flex-col rounded-none border border-border bg-card p-5">
               <div className="flex items-center justify-between">
                 <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <FileText className="size-5" />
