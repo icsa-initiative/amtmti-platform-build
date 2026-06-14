@@ -1,0 +1,96 @@
+{
+  "projectSettings": {
+    "framework": "nextjs"
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "description": "Your Supabase project URL"
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "description": "Your Supabase anonymous key"
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "description": "Your Supabase service role key"
+    },
+    "EMAIL_PROVIDER": {
+      "description": "Email provider: 'resend' or 'sendgrid'",
+      "default": "resend"
+    },
+    "RESEND_API_KEY": {
+      "description": "Resend API key for email service"
+    },
+    "SENDGRID_API_KEY": {
+      "description": "SendGrid API key (optional, if using SendGrid)"
+    },
+    "EMAIL_FROM": {
+      "description": "Sender email address",
+      "default": "noreply@amtmti.africa"
+    },
+    "COMPANY_EMAIL": {
+      "description": "Company email address",
+      "default": "admissions@amtmti.africa"
+    },
+    "NEXT_PUBLIC_AMTMTI_EMAIL": {
+      "description": "Public AMTMTI email address",
+      "default": "admissions@amtmti.africa"
+    },
+    "NEXT_PUBLIC_APP_URL": {
+      "description": "Your application URL"
+    },
+    "NEXT_PUBLIC_AUTH_REDIRECT_URL": {
+      "description": "Auth callback redirect URL"
+    },
+    "NEXT_PUBLIC_GA_ID": {
+      "description": "Google Analytics ID (optional)"
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "https://admin.amtmti.africa",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}
