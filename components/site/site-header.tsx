@@ -9,14 +9,13 @@ import {
   Menu,
   Phone,
   ChevronDown,
-  GraduationCap,
-  ShieldUser,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SITE, MAIN_NAV, PROFESSION_CATEGORIES, PROGRAM_TYPES } from '@/lib/site-data'
 import { Logo } from './logo'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from '@/components/ui/button'
+import { EnrollButton } from '@/components/marketing/enroll-button'
 import {
   Sheet,
   SheetContent,
@@ -42,17 +41,6 @@ function TopBar() {
             <MapPin className="size-3.5 text-gold" />
             {SITE.address.line1}, {SITE.address.line2}, {SITE.address.country}
           </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/admin/login" className="flex items-center gap-1.5 font-medium transition hover:text-gold">
-            <ShieldUser className="size-3.5" />
-            Admin Login
-          </Link>
-          <span className="text-primary-foreground/30">|</span>
-          <Link href="/login" className="flex items-center gap-1.5 font-medium transition hover:text-gold">
-            <GraduationCap className="size-3.5" />
-            Student Login
-          </Link>
         </div>
       </div>
     </div>
@@ -133,6 +121,9 @@ export function SiteHeader() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
+  // Filter out E-Learning from public navigation
+  const publicNav = MAIN_NAV.filter(item => item.label !== 'E-Learning')
+
   return (
     <header className="sticky top-0 z-50">
       <TopBar />
@@ -150,7 +141,7 @@ export function SiteHeader() {
           </Link>
 
           <nav className="hidden items-center gap-1 xl:flex">
-            {MAIN_NAV.map((item) =>
+            {publicNav.map((item) =>
               item.label === 'Programs' ? (
                 <div
                   key={item.href}
@@ -197,7 +188,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle className="hidden sm:inline-flex" />
-            <Button className="hidden bg-gold text-gold-foreground hover:bg-gold/90 md:inline-flex" render={<Link href="/register">Enroll Now</Link>} />
+            <EnrollButton className="hidden bg-gold text-gold-foreground hover:bg-gold/90 md:inline-flex" />
 
             {/* Mobile */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -213,7 +204,7 @@ export function SiteHeader() {
                   <SheetTitle render={<Logo />} />
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 p-4">
-                  {MAIN_NAV.map((item) => (
+                  {publicNav.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
@@ -230,29 +221,8 @@ export function SiteHeader() {
                   ))}
                 </nav>
                 <div className="flex flex-col gap-2 border-t p-4">
-                  <Button
-                    className="bg-gold text-gold-foreground hover:bg-gold/90"
-                    render={
-                      <Link href="/register" onClick={() => setMobileOpen(false)}>
-                        Enroll Now
-                      </Link>
-                    }
-                  />
-                  <Button
-                    variant="outline"
-                    render={
-                      <Link href="/login" onClick={() => setMobileOpen(false)}>
-                        Student Login
-                      </Link>
-                    }
-                  />
-                  <Button
-                    variant="ghost"
-                    render={
-                      <Link href="/admin/login" onClick={() => setMobileOpen(false)}>
-                        Admin Login
-                      </Link>
-                    }
+                  <EnrollButton
+                    className="w-full bg-gold text-gold-foreground hover:bg-gold/90"
                   />
                   <div className="flex items-center justify-between pt-2 text-sm">
                     <span className="text-muted-foreground">Theme</span>
