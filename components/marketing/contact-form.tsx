@@ -1,97 +1,174 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, Send } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { toast } from 'sonner'
+import { Loader2, CheckCircle2 } from 'lucide-react'
 
-export function ContactForm({
-  defaultSubject = '',
-  compact = false,
-}: {
-  defaultSubject?: string
-  compact?: boolean
-}) {
-  const [loading, setLoading] = useState(false)
+const INQUIRY_TYPES = ['General', 'Programs', 'Research', 'Membership', 'Support', 'Other']
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+export function ContactForm() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    inquiryType: 'General',
+    message: '',
+  })
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    const form = e.currentTarget
-    const data = new FormData(form)
+    setIsLoading(true)
 
-    const supabase = createClient()
-    const { error } = await supabase.from('contact_messages').insert({
-      name: String(data.get('name') ?? ''),
-      email: String(data.get('email') ?? ''),
-      subject: String(data.get('subject') ?? defaultSubject),
-      message: String(data.get('message') ?? ''),
-    })
+    try {
+      const response = await fetch('/api/contact/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-    setLoading(false)
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Submission failed')
+      }
 
-    if (error) {
-      toast.error('Something went wrong. Please try again.')
-      return
+      setIsSuccess(true)
+      toast.success('Message sent successfully!')
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        inquiryType: 'General',
+        message: '',
+      })
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to send message',
+      )
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    toast.success('Message sent! Our team will be in touch soon.')
-    form.reset()
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <CheckCircle2 className="mb-6 size-16 text-green-600" />
+        <h3 className="mb-2 text-2xl font-bold text-foreground">
+          Message Sent Successfully
+        </h3>
+        <p className="mb-6 text-muted-foreground">
+          Thank you for contacting us. We will respond to your message shortly.
+        </p>
+        <Button
+          onClick={() => setIsSuccess(false)}
+          className="bg-gold text-gold-foreground hover:bg-gold/90"
+        >
+          Send Another Message
+        </Button>
+      </div>
+    )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className={compact ? 'flex flex-col gap-4' : 'grid gap-4 sm:grid-cols-2'}>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="cf-name">Full name</Label>
-          <Input id="cf-name" name="name" required placeholder="Jane Doe" />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="cf-email">Email</Label>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Label htmlFor="name">Full Name *</Label>
           <Input
-            id="cf-email"
-            name="email"
-            type="email"
+            id="name"
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            placeholder="Your name"
             required
-            placeholder="jane@example.com"
+            className="mt-1.5"
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email Address *</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            placeholder="your.email@example.com"
+            required
+            className="mt-1.5"
           />
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="cf-subject">Subject</Label>
-        <Input
-          id="cf-subject"
-          name="subject"
-          defaultValue={defaultSubject}
-          required
-          placeholder="How can we help?"
-        />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Label htmlFor="phone">Phone Number</Label>
+          <Input
+            id="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => handleChange('phone', e.target.value)}
+            placeholder="+254 712 345 678"
+            className="mt-1.5"
+          />
+        </div>
+        <div>
+          <Label htmlFor="inquiryType">Inquiry Type *</Label>
+          <Select value={formData.inquiryType} onValueChange={(value) => handleChange('inquiryType', value)}>
+            <SelectTrigger id="inquiryType" className="mt-1.5">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {INQUIRY_TYPES.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="cf-message">Message</Label>
+
+      <div>
+        <Label htmlFor="message">Message *</Label>
         <Textarea
-          id="cf-message"
-          name="message"
-          required
+          id="message"
+          value={formData.message}
+          onChange={(e) => handleChange('message', e.target.value)}
+          placeholder="Write your message here..."
           rows={5}
-          placeholder="Tell us a little more..."
+          required
+          className="mt-1.5"
         />
       </div>
+
       <Button
         type="submit"
-        disabled={loading}
-        className="self-start bg-gold text-gold-foreground hover:bg-gold/90"
+        disabled={isLoading}
+        className="w-full bg-gold text-gold-foreground hover:bg-gold/90"
       >
-        {loading ? (
-          <Loader2 className="size-4 animate-spin" />
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 size-4 animate-spin" />
+            Sending...
+          </>
         ) : (
-          <Send className="size-4" />
+          'Send Message'
         )}
-        {loading ? 'Sending...' : 'Send message'}
       </Button>
     </form>
   )
