@@ -1,0 +1,70 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { contactFormSchema } from '@/lib/validations/contact'
+import { sendContactEmails } from '@/lib/email/contact'
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+
+    // Validate data
+    const validatedData = contactFormSchema.parse(body)
+
+    // Create Supabase client
+    const supabase = await createClient()
+
+    // Insert into database
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .insert([
+        {
+          name: validatedData.name,
+          email: validatedData.email,
+          inquiry_type: validatedData.inquiryType,
+          message: validatedData.message,
+          phone: validatedData.phone || null,
+          status: 'New',
+          source: 'web_form',
+        },
+      ])
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Supabase error:', error)
+      return NextResponse.json(
+        { error: 'Failed to save contact message' },
+        { status: 500 },
+      )
+    }
+
+    // Send emails
+    try {
+      await sendContactEmails(validatedData)
+    } catch (emailError) {
+      console.error('Email error:', emailError)
+      // Don't fail the request if email fails
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Message sent successfully',
+        messageId: data.id,
+      },
+      { status: 201 },
+    )
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 },
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    )
+  }
+}
