@@ -3,37 +3,24 @@
 import { useMemo, useState } from 'react'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { PROGRAMS } from '@/lib/programs-data'
-import { PROFESSION_CATEGORIES, PROGRAM_LEVELS, DELIVERY_MODES, PROGRAMME_CATEGORIES } from '@/lib/site-data'
+import { PROGRAMME_CATEGORIES } from '@/lib/site-data'
 import { ProgramCard } from './program-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
-// Map the friendly "CPD Courses" nav label to the data level "CPD Course"
-function normalizeLevel(level: string) {
-  return level === 'CPD Courses' ? 'CPD Course' : level
-}
-
 export function ProgramsExplorer({
-  initialProfession = '',
-  initialLevel = '',
+  initialProgramme = '',
 }: {
-  initialProfession?: string
-  initialLevel?: string
+  initialProgramme?: string
 }) {
   const [query, setQuery] = useState('')
-  const [profession, setProfession] = useState(initialProfession)
-  const [level, setLevel] = useState(normalizeLevel(initialLevel))
-  const [mode, setMode] = useState('')
-  const [programme, setProgramme] = useState('')
+  const [programme, setProgramme] = useState(initialProgramme)
 
   const filtered = useMemo(() => {
     return PROGRAMS.filter((p) => {
       if (programme && (p.programme || '') !== programme) return false
-      if (profession && p.category !== profession) return false
-      if (level && p.level !== level) return false
-      if (mode && p.mode !== mode) return false
       if (query) {
         const q = query.toLowerCase()
         return (
@@ -44,9 +31,9 @@ export function ProgramsExplorer({
       }
       return true
     })
-  }, [query, profession, level, mode, programme])
+  }, [query, programme])
 
-  const hasFilters = profession || level || mode || query
+  const hasFilters = programme || query
 
   return (
     <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
@@ -60,7 +47,7 @@ export function ProgramsExplorer({
             </h2>
           </div>
 
-          <FilterGroup label="Programmes">
+          <FilterGroup label="Under Programmes">
             <FilterChip active={programme === ''} onClick={() => setProgramme('')}>
               All
             </FilterChip>
@@ -75,52 +62,13 @@ export function ProgramsExplorer({
             ))}
           </FilterGroup>
 
-          <FilterGroup label="Profession">
-            <FilterChip active={profession === ''} onClick={() => setProfession('')}>
-              All
-            </FilterChip>
-            {PROFESSION_CATEGORIES.map((c) => (
-              <FilterChip
-                key={c.slug}
-                active={profession === c.slug}
-                onClick={() => setProfession(c.slug)}
-              >
-                {c.title}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup label="Level">
-            <FilterChip active={level === ''} onClick={() => setLevel('')}>
-              All
-            </FilterChip>
-            {PROGRAM_LEVELS.map((l) => (
-              <FilterChip key={l} active={level === l} onClick={() => setLevel(l)}>
-                {l}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup label="Delivery mode">
-            <FilterChip active={mode === ''} onClick={() => setMode('')}>
-              All
-            </FilterChip>
-            {DELIVERY_MODES.map((m) => (
-              <FilterChip key={m} active={mode === m} onClick={() => setMode(m)}>
-                {m}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-
           {hasFilters && (
             <Button
               variant="ghost"
               size="sm"
               className="mt-2 w-full text-muted-foreground"
               onClick={() => {
-                setProfession('')
-                setLevel('')
-                setMode('')
+                setProgramme('')
                 setQuery('')
               }}
             >

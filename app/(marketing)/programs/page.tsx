@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function ProgramsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ profession?: string; level?: string }>
+  searchParams: Promise<{ programme?: string }>
 }) {
   const params = await searchParams
 
@@ -26,10 +26,7 @@ export default async function ProgramsPage({
       />
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-6">
-          <ProgramsExplorer
-            initialProfession={params.profession ?? ''}
-            initialLevel={params.level ?? ''}
-          />
+          <ProgramsExplorer initialProgramme={params.programme ?? ''} />
         </div>
       </section>
     </>
