@@ -23,8 +23,9 @@ export async function POST(req: NextRequest) {
           inquiry_type: validatedData.inquiryType,
           message: validatedData.message,
           phone: validatedData.phone || null,
-          status: 'New',
           source: 'web_form',
+          email_status: 'pending',
+          status: 'new',
         },
       ])
       .select()
@@ -39,11 +40,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Send emails
-    try {
-      await sendContactEmails(validatedData)
-    } catch (emailError) {
-      console.error('Email error:', emailError)
-      // Don't fail the request if email fails
+    const emailResult = await sendContactEmails(validatedData)
+    const emailStatus = emailResult.adminSent && emailResult.senderSent ? 'sent' : 'failed'
+
+    const { error: updateError } = await supabase
+      .from('contact_messages')
+      .update({ email_status: emailStatus })
+      .eq('id', data.id)
+
+    if (updateError) {
+      console.error('Failed to update contact email status:', updateError)
     }
 
     return NextResponse.json(

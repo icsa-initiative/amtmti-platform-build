@@ -183,6 +183,7 @@ create table if not exists public.membership_applications (
   profession text,
   tier text not null,
   reason text,
+  email_status text not null default 'pending' check (email_status in ('pending', 'sent', 'failed')),
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   notes text,
   created_at timestamptz not null default now()

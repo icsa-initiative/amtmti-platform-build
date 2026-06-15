@@ -1,8 +1,17 @@
+import { sendEmailResend } from './resend'
+
 const EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'resend'
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@amtmti.africa'
-const COMPANY_EMAIL = process.env.COMPANY_EMAIL || 'admissions@amtmti.africa'
-const RESEND_API_KEY = process.env.RESEND_API_KEY
+const EMAIL_FROM = process.env.EMAIL_FROM
+const COMPANY_EMAIL = process.env.COMPANY_EMAIL
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+
+if (!EMAIL_FROM) {
+  console.warn('EMAIL_FROM is not configured. Please set EMAIL_FROM in environment variables.')
+}
+
+if (!COMPANY_EMAIL) {
+  console.warn('COMPANY_EMAIL is not configured. Please set COMPANY_EMAIL in environment variables.')
+}
 
 export interface EmailOptions {
   to: string
@@ -14,51 +23,24 @@ export interface EmailOptions {
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   if (EMAIL_PROVIDER === 'resend') {
     return sendEmailResend(options)
-  } else if (EMAIL_PROVIDER === 'sendgrid') {
+  }
+
+  if (EMAIL_PROVIDER === 'sendgrid') {
     return sendEmailSendGrid(options)
-  } else {
-    console.warn(`Unknown email provider: ${EMAIL_PROVIDER}`)
-    return false
-  }
-}
-
-async function sendEmailResend(options: EmailOptions): Promise<boolean> {
-  if (!RESEND_API_KEY) {
-    console.error('Resend API key not configured')
-    return false
   }
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: options.fromName ? `${options.fromName} <${EMAIL_FROM}>` : EMAIL_FROM,
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
-      }),
-    })
-
-    if (!response.ok) {
-      const error = await response.json()
-      console.error('Resend error:', error)
-      return false
-    }
-
-    return true
-  } catch (error) {
-    console.error('Error sending email with Resend:', error)
-    return false
-  }
+  console.warn(`Unknown email provider: ${EMAIL_PROVIDER}`)
+  return false
 }
 
 async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
   if (!SENDGRID_API_KEY) {
     console.error('SendGrid API key not configured')
+    return false
+  }
+
+  if (!EMAIL_FROM) {
+    console.error('EMAIL_FROM is not configured')
     return false
   }
 
@@ -87,7 +69,7 @@ async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
     })
 
     if (!response.ok) {
-      const error = await response.json()
+      const error = await response.text()
       console.error('SendGrid error:', error)
       return false
     }

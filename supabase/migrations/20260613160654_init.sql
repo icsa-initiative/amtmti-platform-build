@@ -1,5 +1,5 @@
 -- AMTMTI Platform — Row Level Security policies
--- Run after 001_schema.sql
+-- Run after 20260613160226_init.sql
 
 -- Helper: is the current user an admin?
 create or replace function public.is_admin()
@@ -149,36 +149,6 @@ create policy "membership_select" on public.membership_applications
 
 drop policy if exists "membership_admin_write" on public.membership_applications;
 create policy "membership_admin_write" on public.membership_applications
-  for all using (public.is_admin()) with check (public.is_admin());
-
--- ---------------------------------------------------------------------------
--- Newsletter subscribers (anyone may submit; admins manage)
--- ---------------------------------------------------------------------------
-drop policy if exists "newsletter_insert" on public.newsletter_subscribers;
-create policy "newsletter_insert" on public.newsletter_subscribers
-  for insert with check (true);
-
-drop policy if exists "newsletter_select" on public.newsletter_subscribers;
-create policy "newsletter_select" on public.newsletter_subscribers
-  for select using (public.is_admin());
-
-drop policy if exists "newsletter_admin_write" on public.newsletter_subscribers;
-create policy "newsletter_admin_write" on public.newsletter_subscribers
-  for all using (public.is_admin()) with check (public.is_admin());
-
--- ---------------------------------------------------------------------------
--- Enrollment applications (anyone may submit; admins manage)
--- ---------------------------------------------------------------------------
-drop policy if exists "enrollment_insert" on public.enrollment_applications;
-create policy "enrollment_insert" on public.enrollment_applications
-  for insert with check (true);
-
-drop policy if exists "enrollment_select" on public.enrollment_applications;
-create policy "enrollment_select" on public.enrollment_applications
-  for select using (auth.uid() = user_id or public.is_admin());
-
-drop policy if exists "enrollment_admin_write" on public.enrollment_applications;
-create policy "enrollment_admin_write" on public.enrollment_applications
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- ---------------------------------------------------------------------------
