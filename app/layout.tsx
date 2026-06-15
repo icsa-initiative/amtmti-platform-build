@@ -11,7 +11,7 @@ const sourceSerif = Source_Serif_4({
   display: 'swap',
 })
 
-const siteUrl = 'https://amtmti.africa'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://amtmti.africa'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -67,7 +67,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${sourceSerif.variable} bg-background`}
     >
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

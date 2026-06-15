@@ -22,7 +22,8 @@ export function validateAdminCredentials(email: string, password: string) {
 
 export async function createAdminSession() {
   const store = await cookies()
-  store.set(ADMIN_COOKIE_NAME, makeAdminToken(), {
+  const token = await makeAdminToken()
+  store.set(ADMIN_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -38,5 +39,5 @@ export async function destroyAdminSession() {
 
 export async function isAdminAuthenticated() {
   const store = await cookies()
-  return verifyAdminToken(store.get(ADMIN_COOKIE_NAME)?.value)
+  return await verifyAdminToken(store.get(ADMIN_COOKIE_NAME)?.value)
 }

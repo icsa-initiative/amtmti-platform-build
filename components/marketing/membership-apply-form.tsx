@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Loader2, Send } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { MEMBERSHIP_TIERS } from '@/lib/site-data'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,23 +25,24 @@ export function MembershipApplyForm() {
     const form = e.currentTarget
     const data = new FormData(form)
 
-    const supabase = createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    const { error } = await supabase.from('membership_applications').insert({
-      user_id: user?.id ?? null,
-      name: String(data.get('name') ?? ''),
+    const payload = {
+      fullName: String(data.get('name') ?? ''),
       email: String(data.get('email') ?? ''),
       organization: String(data.get('organization') ?? ''),
-      tier,
+      membershipTier: tier,
+    }
+
+    const response = await fetch('/api/membership/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
 
     setLoading(false)
 
-    if (error) {
-      toast.error('Could not submit your application. Please try again.')
+    if (!response.ok) {
+      const errorData = await response.json()
+      toast.error(errorData.error || 'Could not submit your application. Please try again.')
       return
     }
 

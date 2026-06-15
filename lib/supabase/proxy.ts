@@ -9,7 +9,8 @@ export async function updateSession(request: NextRequest) {
   // Admins authenticate via a separate signed cookie, not Supabase Auth.
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const token = request.cookies.get('amtmti_admin')?.value
-    if (!verifyAdminToken(token)) {
+    const isValidToken = await verifyAdminToken(token)
+    if (!isValidToken) {
       const url = request.nextUrl.clone()
       url.pathname = '/admin/login'
       return NextResponse.redirect(url)
