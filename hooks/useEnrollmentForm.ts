@@ -5,6 +5,7 @@ import {
   enrollmentStep1Schema,
   enrollmentStep2Schema,
   enrollmentStep3Schema,
+  enrollmentStep4Schema,
   type FullEnrollment,
 } from '@/lib/validations/enrollment'
 
@@ -12,6 +13,10 @@ interface Course {
   id: string
   name: string
   course_type: string
+  category?: string
+  duration?: string
+  mode?: string
+  fees_ksh?: number
 }
 
 const initialFormData: FullEnrollment = {
@@ -27,6 +32,12 @@ const initialFormData: FullEnrollment = {
   courseType: 'Certificate',
   courseId: '',
   courseName: '',
+  highestEducation: undefined,
+  currentProfession: undefined,
+  employer: '',
+  yearsOfExperience: undefined,
+  interestReason: '',
+  preferredLearningMode: undefined,
 }
 
 export function useEnrollmentForm() {
@@ -79,6 +90,15 @@ export function useEnrollmentForm() {
             courseType: formData.courseType,
             courseId: formData.courseId,
             courseName: formData.courseName,
+          })
+        } else if (step === 4) {
+          enrollmentStep4Schema.parse({
+            highestEducation: formData.highestEducation,
+            currentProfession: formData.currentProfession,
+            employer: formData.employer,
+            yearsOfExperience: formData.yearsOfExperience,
+            interestReason: formData.interestReason,
+            preferredLearningMode: formData.preferredLearningMode,
           })
         }
         return true

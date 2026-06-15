@@ -13,9 +13,6 @@ insert into public.program_categories (slug, title, description) values
   ('physicians', 'Physicians', 'Collaborative prescribing and therapeutic optimisation.')
 on conflict (slug) do nothing;
 
--- ---------------------------------------------------------------------------
--- Programs
--- ---------------------------------------------------------------------------
 insert into public.programs (slug, title, category, category_label, level, mode, duration, fees_ksh, summary, outcomes, featured) values
   ('mtm-foundations-certificate', 'MTM Foundations Certificate', 'pharmacists', 'Pharmacists', 'Certificate', 'Online', '8 weeks', 28000,
     'Build a solid grounding in medication therapy management principles, patient assessment, and care planning.',
@@ -40,7 +37,31 @@ insert into public.programs (slug, title, category, category_label, level, mode,
     array['Apply quality assurance standards','Support formulation and compounding','Manage the medicines supply chain'], false),
   ('collaborative-prescribing-physicians', 'Collaborative Prescribing for Physicians', 'physicians', 'Physicians', 'CPD Course', 'Online', '5 weeks', 24000,
     'Therapeutic optimisation and collaborative MTM practice for prescribing physicians.',
-    array['Integrate MTM into clinical workflows','Optimise therapy in complex patients','Collaborate with pharmacy teams'], false)
+    array['Integrate MTM into clinical workflows','Optimise therapy in complex patients','Collaborate with pharmacy teams'], false),
+  ('antimicrobial-stewardship-certificate', 'Antimicrobial Stewardship Certificate', 'clinicians', 'Clinicians', 'Certificate', 'Online', '6 weeks', 26000,
+    'Evidence-based antimicrobial stewardship training for clinicians in hospital and community settings.',
+    array['Interpret resistance data','Apply stewardship principles','Support rational antimicrobial use'], false),
+  ('patient-counselling-certificate', 'Patient Counselling Certificate', 'nurses', 'Nurses', 'Certificate', 'Hybrid', '5 weeks', 22000,
+    'Practical communication and counselling skills for improving medication adherence and patient outcomes.',
+    array['Deliver person-centred education','Address adherence barriers','Document counselling outcomes'], false)
+  ('mtm-pharmacists', 'Medication Therapy Management for Pharmacists', 'pharmacists', 'Pharmacists', 'Certificate', 'Online', '6 months', 45000,
+    'MTM-focused coursework tailored for practising pharmacists.',
+    array['Comprehensive medication reviews','Patient-centred care plans','MTM documentation'], false),
+  ('mtm-pharmaceutical-technologists', 'Medication Therapy Management for Pharmaceutical Technologists', 'pharmaceutical-technologists', 'Pharmaceutical Technologists', 'Certificate', 'Online', '6 months', 42000,
+    'MTM adaptations for technologists working across formulation and quality assurance.',
+    array['Medicines optimisation','Quality-focused MTM','Interprofessional collaboration'], false),
+  ('mtm-technicians', 'Medication Therapy Management for Pharmaceutical Technicians', 'pharmaceutical-technicians', 'Pharmaceutical Technicians', 'Certificate', 'Online', '4 months', 30000,
+    'Practical MTM skills for dispensing technicians and frontline pharmacy staff.',
+    array['Safe dispensing practices','Basic MTM interventions','Patient counselling'], false),
+  ('mtm-clinicians', 'Medication Therapy Management for Clinicians', 'clinicians', 'Clinicians', 'CPD Course', 'Online', '4 weeks', 18000,
+    'Short, practical CPD for clinicians on medication safety and optimisation.',
+    array['Recognise high-risk prescribing','Apply stewardship principles','Improve prescribing safety'], false),
+  ('mtm-physicians', 'Medication Therapy Management for Physicians', 'physicians', 'Physicians', 'CPD Course', 'Online', '5 weeks', 24000,
+    'Focused MTM practice for prescribing physicians to support therapeutic optimisation.',
+    array['Therapeutic optimisation','Interprofessional collaboration','Complex case management'], false),
+  ('mtm-nurses', 'Medication Therapy Management for Nurses', 'nurses', 'Nurses', 'Certificate', 'Online', '6 weeks', 22000,
+    'Practical MTM and adherence counselling skills for nursing practice.',
+    array['Adherence counselling','Medication safety checks','Patient education'], false)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------

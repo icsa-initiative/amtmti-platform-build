@@ -4,6 +4,7 @@ export type Program = {
   category: string // profession slug
   categoryLabel: string
   level: 'Certificate' | 'Diploma' | 'Postgraduate Diploma' | 'CPD Course'
+  programme?: string
   mode: 'Online' | 'Hybrid' | 'In-Person'
   duration: string
   feesKsh: number
@@ -14,6 +15,90 @@ export type Program = {
 }
 
 export const PROGRAMS: Program[] = [
+  {
+    slug: 'mtm-pharmacists',
+    title: 'Medication Therapy Management for Pharmacists',
+    category: 'pharmacists',
+    categoryLabel: 'Pharmacists',
+    level: 'Certificate',
+    programme: 'MTM courses',
+    mode: 'Online',
+    duration: '6 months',
+    feesKsh: 45000,
+    summary: 'MTM-focused coursework tailored for practising pharmacists.',
+    outcomes: ['Comprehensive medication reviews', 'Patient-centred care plans', 'MTM documentation'],
+    featured: false,
+  },
+  {
+    slug: 'mtm-pharmaceutical-technologists',
+    title: 'Medication Therapy Management for Pharmaceutical Technologists',
+    category: 'pharmaceutical-technologists',
+    categoryLabel: 'Pharmaceutical Technologists',
+    level: 'Certificate',
+    programme: 'MTM courses',
+    mode: 'Online',
+    duration: '6 months',
+    feesKsh: 42000,
+    summary: 'MTM adaptations for technologists working across formulation and quality assurance.',
+    outcomes: ['Medicines optimisation', 'Quality-focused MTM', 'Interprofessional collaboration'],
+    featured: false,
+  },
+  {
+    slug: 'mtm-technicians',
+    title: 'Medication Therapy Management for Pharmaceutical Technicians',
+    category: 'pharmaceutical-technicians',
+    categoryLabel: 'Pharmaceutical Technicians',
+    level: 'Certificate',
+    programme: 'MTM courses',
+    mode: 'Online',
+    duration: '4 months',
+    feesKsh: 30000,
+    summary: 'Practical MTM skills for dispensing technicians and frontline pharmacy staff.',
+    outcomes: ['Safe dispensing practices', 'Basic MTM interventions', 'Patient counselling'],
+    featured: false,
+  },
+  {
+    slug: 'mtm-clinicians',
+    title: 'Medication Therapy Management for Clinicians',
+    category: 'clinicians',
+    categoryLabel: 'Clinicians',
+    level: 'CPD Course',
+    programme: 'Professional Development Courses',
+    mode: 'Online',
+    duration: '4 weeks',
+    feesKsh: 18000,
+    summary: 'Short, practical CPD for clinicians on medication safety and optimisation.',
+    outcomes: ['Recognise high-risk prescribing', 'Apply stewardship principles', 'Improve prescribing safety'],
+    featured: false,
+  },
+  {
+    slug: 'mtm-physicians',
+    title: 'Medication Therapy Management for Physicians',
+    category: 'physicians',
+    categoryLabel: 'Physicians',
+    level: 'CPD Course',
+    programme: 'Professional Development Courses',
+    mode: 'Online',
+    duration: '5 weeks',
+    feesKsh: 24000,
+    summary: 'Focused MTM practice for prescribing physicians to support therapeutic optimisation.',
+    outcomes: ['Therapeutic optimisation', 'Interprofessional collaboration', 'Complex case management'],
+    featured: false,
+  },
+  {
+    slug: 'mtm-nurses',
+    title: 'Medication Therapy Management for Nurses',
+    category: 'nurses',
+    categoryLabel: 'Nurses',
+    level: 'Certificate',
+    programme: 'MTM courses',
+    mode: 'Online',
+    duration: '6 weeks',
+    feesKsh: 22000,
+    summary: 'Practical MTM and adherence counselling skills for nursing practice.',
+    outcomes: ['Adherence counselling', 'Medication safety checks', 'Patient education'],
+    featured: false,
+  },
   {
     slug: 'mtm-foundations-certificate',
     title: 'MTM Foundations Certificate',

@@ -14,19 +14,33 @@ import { useEnrollmentForm } from '@/hooks/useEnrollmentForm'
 import { EnrollmentStep1 } from './enrollment-step-1'
 import { EnrollmentStep2 } from './enrollment-step-2'
 import { EnrollmentStep3 } from './enrollment-step-3'
+import { EnrollmentStep4 } from './enrollment-step-4'
+import { EnrollmentStep5 } from './enrollment-step-5'
 import { EnrollmentSuccess } from './enrollment-success'
 import { ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 
+import type { Program } from '@/lib/programs-data'
+
 interface EnrollmentModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  initialProgram?: Program | null
 }
 
-export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
+interface ProgramDetails {
+  name: string
+  category: string
+  duration: string
+  mode: string
+  fee: number
+}
+
+export function EnrollmentModal({ open, onOpenChange, initialProgram }: EnrollmentModalProps) {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [programDetails, setProgramDetails] = useState<ProgramDetails | null>(null)
   const {
     formData,
     setFormData,
@@ -34,6 +48,33 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
     courses,
     loadingCourses,
   } = useEnrollmentForm()
+
+  // If opened with an initial program, prefill course selection (uses slug)
+  useEffect(() => {
+    if (open && initialProgram) {
+      setFormData((prev) => ({
+        ...prev,
+        courseId: initialProgram.slug || '',
+        courseName: initialProgram.title || prev.courseName,
+      }))
+    }
+  }, [open, initialProgram, setFormData])
+
+  // Load program details when course is selected
+  useEffect(() => {
+    if (formData.courseId && courses.length > 0) {
+      const selected = courses.find((c) => c.id === formData.courseId || c.id === formData.courseId)
+      if (selected) {
+        setProgramDetails({
+          name: selected.name,
+          category: selected.category || '',
+          duration: selected.duration || '',
+          mode: selected.mode || '',
+          fee: selected.fees_ksh || 0,
+        })
+      }
+    }
+  }, [formData.courseId, courses])
 
   useEffect(() => {
     if (!open) {
@@ -55,7 +96,7 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
   }
 
   const handleSubmit = async () => {
-    if (!validateStep(3)) {
+    if (!validateStep(5)) {
       toast.error('Please complete all fields')
       return
     }
@@ -65,7 +106,13 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
       const response = await fetch('/api/enrollment/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          programCategory: programDetails?.category || '',
+          programDuration: programDetails?.duration || '',
+          programStudyMode: programDetails?.mode || '',
+          programFee: programDetails?.fee || 0,
+        }),
       })
 
       if (!response.ok) {
@@ -101,22 +148,28 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
         courseType: 'Certificate',
         courseId: '',
         courseName: '',
+        highestEducation: undefined,
+        currentProfession: undefined,
+        employer: '',
+        yearsOfExperience: undefined,
+        interestReason: '',
+        preferredLearningMode: undefined,
       })
     }
     onOpenChange(false)
   }
 
-  const progressPercentage = showSuccess ? 100 : (step / 3) * 100
+  const progressPercentage = showSuccess ? 100 : (step / 5) * 100
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl border-0 p-0">
+      <DialogContent className="max-w-3xl border-0 p-0">
         <div className="overflow-hidden">
           {/* Progress Bar */}
           <div className="bg-primary p-6">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-medium text-primary-foreground">
-                {showSuccess ? 'Complete' : `Step ${step} of 3`}
+                {showSuccess ? 'Complete' : `Step ${step} of 5`}
               </span>
               <span className="text-xs text-primary-foreground/70">
                 {Math.round(progressPercentage)}%
@@ -126,7 +179,7 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
           </div>
 
           {/* Content */}
-          <div className="min-h-[600px] p-8">
+          <div className="min-h-150 p-8">
             <AnimatePresence mode="wait">
               {showSuccess ? (
                 <motion.div
@@ -166,6 +219,18 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
                       loadingCourses={loadingCourses}
                     />
                   )}
+                  {step === 4 && (
+                    <EnrollmentStep4
+                      data={formData}
+                      onDataChange={setFormData}
+                    />
+                  )}
+                  {step === 5 && (
+                    <EnrollmentStep5
+                      data={formData}
+                      programDetails={programDetails || undefined}
+                    />
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -184,7 +249,7 @@ export function EnrollmentModal({ open, onOpenChange }: EnrollmentModalProps) {
                 Back
               </Button>
               <div className="flex-1" />
-              {step < 3 ? (
+              {step < 5 ? (
                 <Button
                   onClick={handleNext}
                   disabled={isSubmitting}
