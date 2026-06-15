@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { PROGRAMS } from '@/lib/programs-data'
+import { getFeaturedPrograms } from '@/lib/programs-db'
 import { PROFESSION_CATEGORIES } from '@/lib/site-data'
 import { SectionHeading } from '@/components/site/section-heading'
 import { ProgramCard } from './program-card'
 import { Button } from '@/components/ui/button'
 
-export function FeaturedPrograms() {
-  const featured = PROGRAMS.filter((p) => p.featured).slice(0, 4)
+export async function FeaturedPrograms() {
+  const featured = await getFeaturedPrograms(4)
 
   return (
     <section className="bg-muted/40 py-20">

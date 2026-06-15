@@ -54,6 +54,7 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
     if (open && initialProgram) {
       setFormData((prev) => ({
         ...prev,
+        courseType: initialProgram.level,
         courseId: initialProgram.slug || '',
         courseName: initialProgram.title || prev.courseName,
       }))
@@ -63,7 +64,9 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
   // Load program details when course is selected
   useEffect(() => {
     if (formData.courseId && courses.length > 0) {
-      const selected = courses.find((c) => c.id === formData.courseId || c.id === formData.courseId)
+      const selected = courses.find(
+        (c) => c.id === formData.courseId || c.slug === formData.courseId,
+      )
       if (selected) {
         setProgramDetails({
           name: selected.name,
@@ -75,6 +78,20 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
       }
     }
   }, [formData.courseId, courses])
+
+  useEffect(() => {
+    if (initialProgram && courses.length > 0 && formData.courseId) {
+      const selected = courses.find(
+        (c) => c.id === formData.courseId || c.slug === formData.courseId,
+      )
+      if (selected && selected.id !== formData.courseId) {
+        setFormData((prev) => ({
+          ...prev,
+          courseId: selected.id,
+        }))
+      }
+    }
+  }, [initialProgram, courses, formData.courseId, setFormData])
 
   useEffect(() => {
     if (!open) {
@@ -148,12 +165,7 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
         courseType: 'Certificate',
         courseId: '',
         courseName: '',
-        highestEducation: undefined,
-        currentProfession: undefined,
-        employer: '',
-        yearsOfExperience: undefined,
-        interestReason: '',
-        preferredLearningMode: undefined,
+        preferredLearningMode: 'Online',
       })
     }
     onOpenChange(false)
@@ -217,6 +229,7 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
                       onDataChange={setFormData}
                       courses={courses}
                       loadingCourses={loadingCourses}
+                      lockedProgram={Boolean(initialProgram)}
                     />
                   )}
                   {step === 4 && (

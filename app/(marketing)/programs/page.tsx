@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { PageHero } from '@/components/site/page-hero'
 import { ProgramsExplorer } from '@/components/marketing/programs-explorer'
+import { getPrograms } from '@/lib/programs-db'
 
 export const metadata: Metadata = {
   title: 'Programs',
@@ -14,6 +15,7 @@ export default async function ProgramsPage({
   searchParams: Promise<{ programme?: string }>
 }) {
   const params = await searchParams
+  const programs = await getPrograms({ programme: params.programme ?? undefined })
 
   return (
     <>
@@ -26,7 +28,7 @@ export default async function ProgramsPage({
       />
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-6">
-          <ProgramsExplorer initialProgramme={params.programme ?? ''} />
+          <ProgramsExplorer programs={programs} initialProgramme={params.programme ?? ''} />
         </div>
       </section>
     </>

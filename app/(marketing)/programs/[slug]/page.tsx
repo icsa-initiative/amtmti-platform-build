@@ -10,15 +10,17 @@ import {
   BadgeCheck,
   ArrowRight,
 } from 'lucide-react'
-import { PROGRAMS, formatKsh } from '@/lib/programs-data'
+import { getAllProgramSlugs, getProgramBySlug, getPrograms } from '@/lib/programs-db'
+import { formatKsh } from '@/lib/programs-data'
 import { PageHero } from '@/components/site/page-hero'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ProgramCard } from '@/components/marketing/program-card'
 import { EnrollButton } from '@/components/marketing/enroll-button'
 
-export function generateStaticParams() {
-  return PROGRAMS.map((p) => ({ slug: p.slug }))
+export async function generateStaticParams() {
+  const slugs = await getAllProgramSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
@@ -27,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const program = PROGRAMS.find((p) => p.slug === slug)
+  const program = await getProgramBySlug(slug)
   if (!program) return { title: 'Program not found' }
   return {
     title: program.title,
@@ -41,18 +43,18 @@ export default async function ProgramDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const program = PROGRAMS.find((p) => p.slug === slug)
+  const program = await getProgramBySlug(slug)
   if (!program) notFound()
 
-  const related = PROGRAMS.filter(
-    (p) => p.category === program.category && p.slug !== program.slug,
+  const related = (await getPrograms({ category: program.category })).filter(
+    (p) => p.slug !== program.slug,
   ).slice(0, 3)
 
   const facts = [
     { icon: BadgeCheck, label: 'Level', value: program.level },
     { icon: Clock, label: 'Duration', value: program.duration },
     { icon: Monitor, label: 'Delivery', value: program.mode },
-    { icon: CalendarDays, label: 'Intake', value: 'Rolling enrolment' },
+    { icon: CalendarDays, label: 'Intake', value: program.intake || 'Rolling enrolment' },
   ]
 
   return (
@@ -85,11 +87,7 @@ export default async function ProgramDetailPage({
               Program overview
             </h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              {program.summary} This programme blends evidence-based theory with
-              practical, case-led learning so you can apply medication therapy
-              management principles directly in your daily practice. Delivered by
-              experienced clinical faculty, it is designed to fit around the
-              demands of a working healthcare professional.
+              {program.summary}
             </p>
 
             <h3 className="mt-10 font-heading text-xl font-bold text-foreground">
@@ -113,30 +111,18 @@ export default async function ProgramDetailPage({
               How you&apos;ll learn
             </h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              {[
-                {
-                  title: 'Guided modules',
-                  body: 'Structured online modules with readings, case studies, and assessments.',
-                },
-                {
-                  title: 'Live sessions',
-                  body: 'Interactive sessions and clinics with faculty and peers across Africa.',
-                },
-                {
-                  title: 'Applied practice',
-                  body: 'Workplace-based tasks that translate learning into patient impact.',
-                },
-              ].map((item) => (
+              {(program.learningMethods || [
+                'Guided modules with readings, case studies, and assessments.',
+                'Live sessions and interactive clinics with faculty and peers across Africa.',
+                'Applied practice tasks that translate learning into patient impact.',
+              ]).map((method) => (
                 <div
-                  key={item.title}
+                  key={method}
                   className="rounded-none border border-border bg-card p-5"
                 >
                   <h4 className="font-heading text-base font-semibold text-foreground">
-                    {item.title}
+                    {method}
                   </h4>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </p>
                 </div>
               ))}
             </div>

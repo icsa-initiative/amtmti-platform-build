@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabase
       .from('programs')
-      .select('id, title, category, level, duration, mode, fees_ksh')
+      .select('id, slug, title, category, level, duration, mode, fees_ksh')
 
     if (courseType) {
       query = query.eq('level', courseType)
@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
     }
 
     const mapped = (data || []).map((program: any) => ({
-      id: program.id,
+      id: program.slug || program.id,
+      slug: program.slug,
       name: program.title,
       course_type: program.level,
       category: program.category,

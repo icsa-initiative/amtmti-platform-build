@@ -13,17 +13,18 @@ export async function POST(req: NextRequest) {
     // Create Supabase client
     const supabase = await createClient()
 
-    // Fetch program details to get accurate fee
-    let programFee = body.programFee || 0
-    let programCategory = body.programCategory || ''
-    let programDuration = body.programDuration || ''
-    let programStudyMode = body.programStudyMode || ''
+    // Fetch program details to get accurate fee and metadata
+    let programFee = 0
+    let programCategory = ''
+    let programDuration = ''
+    let programStudyMode = ''
+    let programId: string | null = null
 
     if (validatedData.courseId) {
       // First try lookup by id
       let programRes = await supabase
         .from('programs')
-        .select('fees_ksh, category, duration, mode')
+        .select('id, fees_ksh, category, duration, mode')
         .eq('id', validatedData.courseId)
         .maybeSingle()
 
@@ -31,18 +32,24 @@ export async function POST(req: NextRequest) {
       if (!programRes.data) {
         programRes = await supabase
           .from('programs')
-          .select('fees_ksh, category, duration, mode')
+          .select('id, fees_ksh, category, duration, mode')
           .eq('slug', validatedData.courseId)
           .maybeSingle()
       }
 
       const program = programRes.data
-      if (program) {
-        programFee = program.fees_ksh || 0
-        programCategory = program.category || ''
-        programDuration = program.duration || ''
-        programStudyMode = program.mode || ''
+      if (!program) {
+        return NextResponse.json(
+          { error: 'Selected program not found' },
+          { status: 400 },
+        )
       }
+
+      programId = program.id
+      programFee = program.fees_ksh || 0
+      programCategory = program.category || ''
+      programDuration = program.duration || ''
+      programStudyMode = program.mode || ''
     }
 
     // Insert into database
@@ -60,17 +67,12 @@ export async function POST(req: NextRequest) {
           gender: validatedData.gender || null,
           intake: validatedData.intake,
           course_type: validatedData.courseType,
-          course_id: validatedData.courseId,
+          course_id: programId,
           course_name: validatedData.courseName,
           program_category: programCategory,
           program_duration: programDuration,
           program_study_mode: programStudyMode,
           program_fee: programFee,
-          highest_education: validatedData.highestEducation,
-          current_profession: validatedData.currentProfession,
-          employer: validatedData.employer,
-          years_of_experience: validatedData.yearsOfExperience,
-          interest_reason: validatedData.interestReason,
           preferred_learning_mode: validatedData.preferredLearningMode,
           application_status: 'Pending Review',
           payment_status: 'Pending',

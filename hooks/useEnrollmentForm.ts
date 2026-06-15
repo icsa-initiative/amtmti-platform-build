@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import {
   enrollmentStep1Schema,
   enrollmentStep2Schema,
@@ -19,6 +20,8 @@ interface Course {
   fees_ksh?: number
 }
 
+const STORAGE_KEY = 'amtmti-enrollment-form'
+
 const initialFormData: FullEnrollment = {
   firstName: '',
   lastName: '',
@@ -32,27 +35,81 @@ const initialFormData: FullEnrollment = {
   courseType: 'Certificate',
   courseId: '',
   courseName: '',
-  highestEducation: undefined,
-  currentProfession: undefined,
-  employer: '',
-  yearsOfExperience: undefined,
-  interestReason: '',
-  preferredLearningMode: undefined,
+  preferredLearningMode: 'Online',
 }
 
 export function useEnrollmentForm() {
-  const [formData, setFormData] = useState<FullEnrollment>(initialFormData)
+  const [formData, setFormData] = useState<FullEnrollment>(() => {
+    if (typeof window === 'undefined') {
+      return initialFormData
+    }
+
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY)
+      if (!stored) {
+        return initialFormData
+      }
+
+      return {
+        ...initialFormData,
+        ...(JSON.parse(stored) as Partial<FullEnrollment>),
+      }
+    } catch {
+      return initialFormData
+    }
+  })
+
   const [courses, setCourses] = useState<Course[]>([])
   const [loadingCourses, setLoadingCourses] = useState(false)
 
-  // Load courses when course type changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(formData))
+  }, [formData])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const loadUser = async () => {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      const user = data.user
+
+      if (!user) return
+
+      const fullName = user.user_metadata?.full_name as string | undefined
+      const email = user.email ?? ''
+      const phone = user.user_metadata?.phone as string | undefined
+
+      if (
+        fullName &&
+        !formData.firstName &&
+        !formData.lastName &&
+        !formData.email
+      ) {
+        const [firstName = '', lastName = ''] = fullName.split(' ')
+        setFormData((prev) => ({
+          ...prev,
+          firstName: firstName || prev.firstName,
+          lastName: lastName || prev.lastName,
+          email: email || prev.email,
+          phone: phone || prev.phone,
+        }))
+      }
+    }
+
+    loadUser().catch(console.error)
+  }, [])
+
   useEffect(() => {
     const loadCourses = async () => {
       setLoadingCourses(true)
+
       try {
         const response = await fetch(
           `/api/courses?courseType=${encodeURIComponent(formData.courseType)}`,
         )
+
         if (response.ok) {
           const data = await response.json()
           setCourses(data)
@@ -93,14 +150,10 @@ export function useEnrollmentForm() {
           })
         } else if (step === 4) {
           enrollmentStep4Schema.parse({
-            highestEducation: formData.highestEducation,
-            currentProfession: formData.currentProfession,
-            employer: formData.employer,
-            yearsOfExperience: formData.yearsOfExperience,
-            interestReason: formData.interestReason,
             preferredLearningMode: formData.preferredLearningMode,
           })
         }
+
         return true
       } catch {
         return false

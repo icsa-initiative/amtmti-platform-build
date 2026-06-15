@@ -1,35 +1,40 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Loader2, UserPlus, MailCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { PROFESSION_CATEGORIES } from '@/lib/site-data'
 import { toast } from 'sonner'
 
-const COUNTRIES = [
-  'Kenya', 'Uganda', 'Tanzania', 'Rwanda', 'Ethiopia', 'Nigeria', 'Ghana',
-  'South Africa', 'Egypt', 'Zambia', 'Malawi', 'Other',
-]
-
 export function RegisterForm() {
-  const router = useRouter()
   const params = useSearchParams()
-  const program = params.get('program')
+  const redirect = params.get('redirect') || '/programs'
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
-  const [profession, setProfession] = useState('')
   const [country, setCountry] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    try {
+      const stored = window.localStorage.getItem('amtmti-enrollment-form')
+      if (!stored) return
+      const parsed = JSON.parse(stored)
+      if (parsed?.firstName || parsed?.lastName) {
+        setFullName(`${parsed.firstName ?? ''} ${parsed.lastName ?? ''}`.trim())
+      }
+      if (parsed?.email) setEmail(String(parsed.email))
+      if (parsed?.phone) setPhone(String(parsed.phone))
+    } catch {
+      // ignore malformed localStorage data
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -53,7 +58,7 @@ export function RegisterForm() {
     const supabase = createClient()
     const emailRedirectTo =
       typeof window !== 'undefined'
-        ? `${window.location.origin}/auth/callback?next=${program ? `/programs/${program}` : '/portal'}`
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`
         : undefined
 
     const { error } = await supabase.auth.signUp({
@@ -61,7 +66,7 @@ export function RegisterForm() {
       password,
       options: {
         emailRedirectTo,
-        data: { full_name: fullName, phone, country, profession },
+        data: { full_name: fullName, phone, country },
       },
     })
 
@@ -90,7 +95,11 @@ export function RegisterForm() {
             verified, you can sign in to your portal.
           </p>
         </div>
-        <Button variant="outline" className="w-full" render={<a href="/login">Go to sign in</a>} />
+        <Button
+          variant="outline"
+          className="w-full"
+          render={<a href={`/login?redirect=${encodeURIComponent(redirect)}`}>Go to sign in</a>}
+        />
       </div>
     )
   }
@@ -99,44 +108,51 @@ export function RegisterForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="full_name">Full name</Label>
-        <Input id="full_name" name="full_name" required placeholder="Jane Doe" />
+        <Input
+          id="full_name"
+          name="full_name"
+          required
+          placeholder="Jane Doe"
+          value={fullName}
+          onChange={(event) => setFullName(event.target.value)}
+        />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" required placeholder="you@example.com" />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" type="tel" placeholder="+254 700 000000" />
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="+254 700 000000"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+          />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="country">Country</Label>
-          <Select value={country} onValueChange={setCountry}>
-            <SelectTrigger id="country">
-              <SelectValue placeholder="Select country" />
-            </SelectTrigger>
-            <SelectContent>
-              {COUNTRIES.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="profession">Profession</Label>
-          <Select value={profession} onValueChange={setProfession}>
-            <SelectTrigger id="profession">
-              <SelectValue placeholder="Select profession" />
-            </SelectTrigger>
-            <SelectContent>
-              {PROFESSION_CATEGORIES.map((p) => (
-                <SelectItem key={p.slug} value={p.title}>{p.title}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            id="country"
+            name="country"
+            required
+            placeholder="Country of residence"
+            value={country}
+            onChange={(event) => setCountry(event.target.value)}
+          />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

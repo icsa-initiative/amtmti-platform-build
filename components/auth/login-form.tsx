@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Loader2, LogIn } from 'lucide-react'
@@ -10,11 +10,28 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 
+const ENROLLMENT_STORAGE_KEY = 'amtmti-enrollment-form'
+
 export function LoginForm() {
   const router = useRouter()
   const params = useSearchParams()
-  const redirect = params.get('redirect') || '/portal'
+  const redirect = params.get('redirect') || '/programs'
   const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const stored = window.localStorage.getItem(ENROLLMENT_STORAGE_KEY)
+      if (!stored) return
+      const parsed = JSON.parse(stored)
+      if (parsed?.email) {
+        setEmail(String(parsed.email))
+      }
+    } catch {
+      // ignore malformed localStorage data
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -49,6 +66,8 @@ export function LoginForm() {
           autoComplete="email"
           required
           placeholder="you@example.com"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
         />
       </div>
       <div className="flex flex-col gap-1.5">

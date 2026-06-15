@@ -27,11 +27,6 @@ export const enrollmentStep3Schema = z.object({
 })
 
 export const enrollmentStep4Schema = z.object({
-  highestEducation: z.enum(['Secondary School', 'Certificate', 'Diploma', 'Bachelor\'s Degree', 'Master\'s Degree', 'Doctorate', 'Other']),
-  currentProfession: z.enum(['Pharmacist', 'Pharmaceutical Technologist', 'Pharmaceutical Technician', 'Nurse', 'Physician', 'Clinician', 'Student', 'Other']),
-  employer: z.string().min(1, 'Employer / Institution is required'),
-  yearsOfExperience: z.enum(['Less than 1 Year', '1–3 Years', '4–7 Years', '8–15 Years', '15+ Years']),
-  interestReason: z.string().min(10, 'Please provide at least 10 characters'),
   preferredLearningMode: z.enum(['Online', 'Hybrid', 'In-Person']),
 })
 
