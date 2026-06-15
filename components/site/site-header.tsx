@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import {
   Clock,
@@ -14,8 +14,9 @@ import { cn } from '@/lib/utils'
 import { SITE, MAIN_NAV, PROGRAMME_CATEGORIES } from '@/lib/site-data'
 import { Logo } from './logo'
 import { ThemeToggle } from './theme-toggle'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { EnrollButton } from '@/components/marketing/enroll-button'
+import { createClient } from '@/lib/supabase/client'
 import {
   Sheet,
   SheetContent,
@@ -49,7 +50,7 @@ function TopBar() {
 
 function ProgramsMega({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="grid w-[640px] grid-cols-1 gap-6 p-6">
+    <div className="grid w-160 grid-cols-1 gap-6 p-6">
       <div>
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Under Programmes
@@ -94,9 +95,41 @@ function ProgramsMega({ onNavigate }: { onNavigate?: () => void }) {
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const router = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
+  const [user, setUser] = useState<any | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user ?? null)
+    }).catch((error) => {
+      console.error('Supabase user load failed:', error)
+    })
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
+  }, [])
+
+  const firstName =
+    user?.user_metadata?.full_name?.split?.(' ')[0] ||
+    user?.email?.split?.('@')[0] ||
+    null
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setUser(null)
+    router.push('/programs')
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -175,6 +208,29 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-2">
             <ThemeToggle className="hidden sm:inline-flex" />
+            {user ? (
+              <div className="hidden items-center gap-2 md:flex">
+                <span className="rounded-full border border-border px-3 py-1 text-sm text-foreground/80">
+                  Hi, {firstName}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className={buttonVariants({ variant: 'outline', size: 'sm' })}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="hidden items-center gap-2 md:flex">
+                <Link href="/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+                  Login
+                </Link>
+                <Link href="/register" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
+                  Register
+                </Link>
+              </div>
+            )}
             <EnrollButton className="hidden bg-gold text-gold-foreground hover:bg-gold/90 md:inline-flex" />
 
             {/* Mobile */}
@@ -186,7 +242,7 @@ export function SiteHeader() {
               >
                 <Menu className="size-5" />
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] overflow-y-auto p-0">
+              <SheetContent side="right" className="w-75 overflow-y-auto p-0">
                 <SheetHeader className="border-b p-5">
                   <SheetTitle render={<Logo />} />
                 </SheetHeader>
@@ -211,6 +267,24 @@ export function SiteHeader() {
                   <EnrollButton
                     className="w-full bg-gold text-gold-foreground hover:bg-gold/90"
                   />
+                  {user ? (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className={buttonVariants({ variant: 'outline', size: 'default' })}
+                    >
+                      Sign out
+                    </button>
+                  ) : (
+                    <div className="grid gap-2">
+                      <Link href="/login" className={buttonVariants({ variant: 'ghost', size: 'default' })}>
+                        Login
+                      </Link>
+                      <Link href="/register" className={buttonVariants({ variant: 'secondary', size: 'default' })}>
+                        Register
+                      </Link>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between pt-2 text-sm">
                     <span className="text-muted-foreground">Theme</span>
                     <ThemeToggle />

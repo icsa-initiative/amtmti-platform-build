@@ -30,14 +30,18 @@ export function PageHero({
       style={
         bgImage
             ? {
-              // Reduce gradient alpha so background image shows through more clearly
-              backgroundImage: `linear-gradient(to right, oklch(0.42 0.11 250 / 12%), oklch(0.42 0.11 250 / 6%)), url(${bgImage})`,
+              backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.48), rgba(0,0,0,0.24)), linear-gradient(to right, oklch(0.42 0.11 250 / 16%), oklch(0.42 0.11 250 / 8%)), url(${bgImage})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
+              backgroundBlendMode: 'multiply',
             }
           : undefined
       }
     >
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20"
+      />
       <div
         aria-hidden
         className="absolute inset-0 opacity-[0.15]"

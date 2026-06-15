@@ -13,8 +13,13 @@ import type { FullEnrollment } from '@/lib/validations/enrollment'
 
 interface Course {
   id: string
+  slug?: string
   name: string
   course_type: string
+  category?: string
+  duration?: string
+  mode?: string
+  fees_ksh?: number
 }
 
 interface EnrollmentStep3Props {
@@ -22,16 +27,25 @@ interface EnrollmentStep3Props {
   onDataChange: (data: FullEnrollment) => void
   courses: Course[]
   loadingCourses: boolean
+  lockedProgram?: boolean
 }
 
 const INTAKES = ['January', 'March', 'May', 'July', 'September', 'November']
-const COURSE_TYPES = ['Certificate', 'Diploma', 'Artisan', 'Short Course']
+const COURSE_TYPES = [
+  'Certificate',
+  'Diploma',
+  'Artisan',
+  'Short Course',
+  'Postgraduate Diploma',
+  'CPD Course',
+]
 
 export function EnrollmentStep3({
   data,
   onDataChange,
   courses,
   loadingCourses,
+  lockedProgram = false,
 }: EnrollmentStep3Props) {
   const handleChange = (field: string, value: string) => {
     onDataChange({
@@ -42,11 +56,16 @@ export function EnrollmentStep3({
 
   // Reset course selection when course type changes
   useEffect(() => {
-    handleChange('courseId', '')
-    handleChange('courseName', '')
-  }, [data.courseType])
+    if (!lockedProgram) {
+      handleChange('courseId', '')
+      handleChange('courseName', '')
+    }
+  }, [data.courseType, lockedProgram])
 
   const filteredCourses = courses.filter((course) => course.course_type === data.courseType)
+  const selectedCourse = courses.find(
+    (course) => course.id === data.courseId || course.slug === data.courseId,
+  )
 
   return (
     <div className="space-y-6">
@@ -83,6 +102,7 @@ export function EnrollmentStep3({
           <Select
             value={data.courseType}
             onValueChange={(value) => handleChange('courseType', value)}
+            disabled={lockedProgram}
           >
             <SelectTrigger id="courseType" className="mt-1.5">
               <SelectValue />
@@ -104,13 +124,15 @@ export function EnrollmentStep3({
           <Select
             value={data.courseId}
             onValueChange={(value) => {
-              const selectedCourse = courses.find((c) => c.id === value)
+              const selectedCourse = courses.find(
+                (c) => c.id === value || c.slug === value,
+              )
               handleChange('courseId', value)
               if (selectedCourse) {
                 handleChange('courseName', selectedCourse.name)
               }
             }}
-            disabled={loadingCourses || filteredCourses.length === 0}
+            disabled={lockedProgram || loadingCourses || filteredCourses.length === 0}
           >
             <SelectTrigger id="course" className="mt-1.5">
               <SelectValue
@@ -132,6 +154,50 @@ export function EnrollmentStep3({
             </SelectContent>
           </Select>
         </div>
+
+        {selectedCourse && (
+          <div className="rounded-lg border border-border bg-slate-50 p-6">
+            <h3 className="text-lg font-semibold text-foreground">Enrollment Summary</h3>
+            <div className="mt-4 space-y-3 text-sm text-foreground">
+              <p>
+                <span className="font-medium">Program:</span>{' '}
+                {selectedCourse.name}
+              </p>
+              <p>
+                <span className="font-medium">Category:</span>{' '}
+                {selectedCourse.category || data.courseType}
+              </p>
+              <p>
+                <span className="font-medium">Program Type:</span>{' '}
+                {data.courseType}
+              </p>
+              <p>
+                <span className="font-medium">Duration:</span>{' '}
+                {selectedCourse.duration || 'TBD'}
+              </p>
+              <p>
+                <span className="font-medium">Study Mode:</span>{' '}
+                {selectedCourse.mode || 'TBD'}
+              </p>
+              <p>
+                <span className="font-medium">Intake:</span>{' '}
+                {data.intake}
+              </p>
+              <p>
+                <span className="font-medium">Amount Payable:</span>{' '}
+                {new Intl.NumberFormat('en-KE', {
+                  style: 'currency',
+                  currency: 'KES',
+                  minimumFractionDigits: 0,
+                }).format(selectedCourse.fees_ksh || 0)}
+              </p>
+              <p>
+                <span className="font-medium">Status:</span>{' '}
+                Pending Application
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -75,36 +75,26 @@ export function EnrollmentStep2({ data, onDataChange }: EnrollmentStep2Props) {
           <Label htmlFor="country" className="text-sm font-medium">
             Country <span className="text-red-500">*</span>
           </Label>
-          <Select value={data.country} onValueChange={(value) => handleChange('country', value)}>
-            <SelectTrigger id="country" className="mt-1.5">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {COUNTRIES.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            id="country"
+            placeholder="Enter your country"
+            value={data.country}
+            onChange={(e) => handleChange('country', e.target.value)}
+            className="mt-1.5"
+          />
         </div>
 
         <div>
           <Label htmlFor="region" className="text-sm font-medium">
             Region <span className="text-red-500">*</span>
           </Label>
-          <Select value={data.region} onValueChange={(value) => handleChange('region', value)}>
-            <SelectTrigger id="region" className="mt-1.5">
-              <SelectValue placeholder="Select region" />
-            </SelectTrigger>
-            <SelectContent>
-              {regionOptions.map((region) => (
-                <SelectItem key={region} value={region}>
-                  {region}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Input
+            id="region"
+            placeholder="Enter your region"
+            value={data.region}
+            onChange={(e) => handleChange('region', e.target.value)}
+            className="mt-1.5"
+          />
         </div>
 
         <div>

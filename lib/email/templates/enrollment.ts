@@ -8,17 +8,12 @@ export interface EnrollmentTemplateData {
   region?: string
   dateOfBirth?: string
   gender?: string
-  highestEducation?: string
-  profession?: string
-  employer?: string
-  yearsOfExperience?: string
   program: string
   programCategory?: string
   programDuration?: string
   programMode?: string
   programFee?: number
   intakeMonth?: string
-  interestReason?: string
   preferredLearningMode?: string
 }
 
@@ -69,26 +64,10 @@ export function enrollmentNotificationTemplate(data: EnrollmentTemplateData) {
         </tr>
       </table>
 
-      <h3 style="color: #0F4C81; margin-top: 20px;">Professional Information</h3>
+      <h3 style="color: #0F4C81; margin-top: 20px;">Learning Preferences</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%;">Highest Education:</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${data.highestEducation || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Profession:</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${data.profession || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Employer/Institution:</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${data.employer || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Years of Experience:</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${data.yearsOfExperience || 'N/A'}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Preferred Learning Mode:</td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%;">Preferred Learning Mode:</td>
           <td style="padding: 8px; border-bottom: 1px solid #eee;">${data.preferredLearningMode || 'N/A'}</td>
         </tr>
       </table>
@@ -120,12 +99,6 @@ export function enrollmentNotificationTemplate(data: EnrollmentTemplateData) {
           <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; color: #0F4C81;">${formatCurrency(data.programFee)}</td>
         </tr>
       </table>
-
-      <h3 style="color: #0F4C81; margin-top: 20px;">Additional Information</h3>
-      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0;">
-        <p style="margin: 0;"><strong>Reason for Interest:</strong></p>
-        <p style="margin: 5px 0; white-space: pre-wrap;">${data.interestReason || 'N/A'}</p>
-      </div>
 
       <h3 style="color: #0F4C81; margin-top: 20px;">Status</h3>
       <table style="width: 100%; border-collapse: collapse;">

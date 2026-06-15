@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
-import { PROGRAMS } from '@/lib/programs-data'
+import type { Program } from '@/lib/programs-data'
 import { PROGRAMME_CATEGORIES } from '@/lib/site-data'
 import { ProgramCard } from './program-card'
 import { Button } from '@/components/ui/button'
@@ -11,15 +11,17 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 export function ProgramsExplorer({
+  programs,
   initialProgramme = '',
 }: {
+  programs: Program[]
   initialProgramme?: string
 }) {
   const [query, setQuery] = useState('')
   const [programme, setProgramme] = useState(initialProgramme)
 
   const filtered = useMemo(() => {
-    return PROGRAMS.filter((p) => {
+    return programs.filter((p) => {
       if (programme && (p.programme || '') !== programme) return false
       if (query) {
         const q = query.toLowerCase()
@@ -31,7 +33,7 @@ export function ProgramsExplorer({
       }
       return true
     })
-  }, [query, programme])
+  }, [programs, query, programme])
 
   const hasFilters = programme || query
 

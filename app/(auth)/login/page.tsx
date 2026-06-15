@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   description: 'Sign in to your AMTMTI student portal.',
 }
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: { redirect?: string } }) {
+  const redirect = searchParams.redirect ?? '/programs'
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -26,7 +28,10 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-muted-foreground">
         New to AMTMTI?{' '}
-        <Link href="/register" className="font-medium text-primary hover:underline">
+        <Link
+          href={`/register?redirect=${encodeURIComponent(redirect)}`}
+          className="font-medium text-primary hover:underline"
+        >
           Create an account
         </Link>
       </p>

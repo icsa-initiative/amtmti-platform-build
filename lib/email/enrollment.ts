@@ -17,17 +17,12 @@ export async function sendEnrollmentEmails(data: FullEnrollment & {
     region: data.region,
     dateOfBirth: data.dateOfBirth,
     gender: data.gender,
-    highestEducation: data.highestEducation,
-    profession: data.currentProfession,
-    employer: data.employer,
-    yearsOfExperience: data.yearsOfExperience,
     program: `${data.courseName} (${data.courseType})`,
     programCategory: data.programCategory || '',
     programDuration: data.programDuration || '',
     programMode: data.programStudyMode || '',
     programFee: data.programFee || 0,
     intakeMonth: data.intake,
-    interestReason: data.interestReason,
     preferredLearningMode: data.preferredLearningMode,
   }
 
