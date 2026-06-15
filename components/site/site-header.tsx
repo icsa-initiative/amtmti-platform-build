@@ -11,7 +11,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { SITE, MAIN_NAV, PROFESSION_CATEGORIES, PROGRAM_TYPES } from '@/lib/site-data'
+import { SITE, MAIN_NAV, PROGRAMME_CATEGORIES } from '@/lib/site-data'
 import { Logo } from './logo'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from '@/components/ui/button'
@@ -49,24 +49,21 @@ function TopBar() {
 
 function ProgramsMega({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="grid w-[640px] grid-cols-[1.4fr_1fr] gap-6 p-6">
+    <div className="grid w-[640px] grid-cols-1 gap-6 p-6">
       <div>
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          By Profession
+          Under Programmes
         </p>
-        <div className="grid grid-cols-2 gap-1">
-          {PROFESSION_CATEGORIES.map((cat) => (
+        <div className="grid gap-1">
+          {PROGRAMME_CATEGORIES.map((category) => (
             <Link
-              key={cat.slug}
-              href={`/programs?profession=${cat.slug}`}
+              key={category}
+              href={`/programs?programme=${encodeURIComponent(category)}`}
               onClick={onNavigate}
               className="group rounded-lg px-3 py-2 transition hover:bg-accent"
             >
               <span className="block text-sm font-medium text-foreground group-hover:text-primary">
-                {cat.title}
-              </span>
-              <span className="block text-xs text-muted-foreground">
-                {cat.description}
+                {category}
               </span>
             </Link>
           ))}
@@ -74,22 +71,12 @@ function ProgramsMega({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <div className="rounded-xl bg-primary p-5 text-primary-foreground">
         <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gold">
-          Program Types
+          Browse
         </p>
-        <ul className="flex flex-col gap-2">
-          {PROGRAM_TYPES.map((type) => (
-            <li key={type}>
-              <Link
-                href={`/programs?level=${encodeURIComponent(type)}`}
-                onClick={onNavigate}
-                className="flex items-center gap-2 text-sm text-primary-foreground/90 transition hover:text-gold"
-              >
-                <span className="size-1.5 rounded-full bg-gold" />
-                {type}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <p className="text-sm text-primary-foreground/90">
+          Explore all AMTMTI programmes across MTM, professional development,
+          certificates, short courses, diplomas, and more.
+        </p>
         <Button
           variant="secondary"
           size="sm"
