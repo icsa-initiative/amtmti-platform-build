@@ -3,14 +3,32 @@ import { sendConfirmationEmail } from './send-confirmation'
 import { enrollmentNotificationTemplate, enrollmentConfirmationTemplate } from './templates/enrollment'
 import type { FullEnrollment } from '@/lib/validations/enrollment'
 
-export async function sendEnrollmentEmails(data: FullEnrollment) {
+export async function sendEnrollmentEmails(data: FullEnrollment & {
+  programCategory?: string
+  programDuration?: string
+  programStudyMode?: string
+  programFee?: number
+}) {
   const enrollmentData = {
     fullName: `${data.firstName} ${data.lastName}`,
     email: data.email,
     phone: data.phone,
+    country: data.country,
+    region: data.region,
+    dateOfBirth: data.dateOfBirth,
+    gender: data.gender,
+    highestEducation: data.highestEducation,
+    profession: data.currentProfession,
+    employer: data.employer,
+    yearsOfExperience: data.yearsOfExperience,
     program: `${data.courseName} (${data.courseType})`,
-    startDate: data.intake,
-    message: `Country: ${data.country}\nRegion: ${data.region}\nDate of Birth: ${data.dateOfBirth}\nGender: ${data.gender ?? 'Not specified'}`,
+    programCategory: data.programCategory || '',
+    programDuration: data.programDuration || '',
+    programMode: data.programStudyMode || '',
+    programFee: data.programFee || 0,
+    intakeMonth: data.intake,
+    interestReason: data.interestReason,
+    preferredLearningMode: data.preferredLearningMode,
   }
 
   const adminHtml = enrollmentNotificationTemplate(enrollmentData)
@@ -18,13 +36,13 @@ export async function sendEnrollmentEmails(data: FullEnrollment) {
 
   const [adminSent, applicantSent] = await Promise.all([
     sendNotificationEmail(
-      'New AMTMTI Enrollment Application',
+      'New Program Enrollment Application',
       adminHtml,
       'AMTMTI',
     ),
     sendConfirmationEmail(
       data.email,
-      'Your AMTMTI Application Has Been Received',
+      'Your AMTMTI Program Application Has Been Received',
       applicantHtml,
       'AMTMTI Admissions',
     ),

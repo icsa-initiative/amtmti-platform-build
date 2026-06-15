@@ -1,11 +1,53 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { adminLogoutAction } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
+import { FileText, Mail, Users } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function AdminPage() {
   const router = useRouter()
+  const [stats, setStats] = useState({
+    enrollments: 0,
+    messages: 0,
+    applications: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  async function loadStats() {
+    try {
+      setLoading(true)
+      const [enrollmentsRes, messagesRes, applicationsRes] = await Promise.all([
+        fetch('/api/admin/enrollments'),
+        fetch('/api/contact/list'),
+        fetch('/api/membership/list'),
+      ])
+
+      if (enrollmentsRes.ok) {
+        const enrollments = await enrollmentsRes.json()
+        setStats((s) => ({ ...s, enrollments: enrollments.length }))
+      }
+      if (messagesRes.ok) {
+        const messages = await messagesRes.json()
+        setStats((s) => ({ ...s, messages: messages.length }))
+      }
+      if (applicationsRes.ok) {
+        const applications = await applicationsRes.json()
+        setStats((s) => ({ ...s, applications: applications.length }))
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function handleLogout() {
     await adminLogoutAction()
@@ -26,31 +68,67 @@ export default function AdminPage() {
         </div>
 
         {/* Admin Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-card border rounded-lg p-6">
-            <div className="text-sm font-medium text-muted-foreground">Users</div>
-            <div className="text-3xl font-bold mt-2">0</div>
-          </div>
-          <div className="bg-card border rounded-lg p-6">
-            <div className="text-sm font-medium text-muted-foreground">Enrollments</div>
-            <div className="text-3xl font-bold mt-2">0</div>
-          </div>
-          <div className="bg-card border rounded-lg p-6">
-            <div className="text-sm font-medium text-muted-foreground">Revenue</div>
-            <div className="text-3xl font-bold mt-2">$0</div>
-          </div>
-          <div className="bg-card border rounded-lg p-6">
-            <div className="text-sm font-medium text-muted-foreground">Messages</div>
-            <div className="text-3xl font-bold mt-2">0</div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Link href="/admin/enrollments" className="block">
+            <div className="bg-card border rounded-lg p-6 hover:border-primary transition-colors cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Enrollments</div>
+                  <div className="text-3xl font-bold mt-2">{stats.enrollments}</div>
+                </div>
+                <FileText className="h-8 w-8 text-primary/40" />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/admin/messages" className="block">
+            <div className="bg-card border rounded-lg p-6 hover:border-primary transition-colors cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Messages</div>
+                  <div className="text-3xl font-bold mt-2">{stats.messages}</div>
+                </div>
+                <Mail className="h-8 w-8 text-primary/40" />
+              </div>
+            </div>
+          </Link>
+
+          <Link href="/admin/memberships" className="block">
+            <div className="bg-card border rounded-lg p-6 hover:border-primary transition-colors cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Memberships</div>
+                  <div className="text-3xl font-bold mt-2">{stats.applications}</div>
+                </div>
+                <Users className="h-8 w-8 text-primary/40" />
+              </div>
+            </div>
+          </Link>
         </div>
 
-        {/* Coming Soon */}
-        <div className="bg-card border rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-bold mb-2">Welcome to Admin Panel</h2>
-          <p className="text-muted-foreground">
-            Admin features and management tools coming soon.
-          </p>
+        {/* Quick Links */}
+        <div className="bg-card border rounded-lg p-6">
+          <h2 className="text-xl font-bold mb-4">Quick Links</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link href="/admin/enrollments">
+              <Button variant="outline" className="w-full justify-start">
+                <FileText className="mr-2 h-4 w-4" />
+                View Enrollments
+              </Button>
+            </Link>
+            <Link href="/admin/messages">
+              <Button variant="outline" className="w-full justify-start">
+                <Mail className="mr-2 h-4 w-4" />
+                View Messages
+              </Button>
+            </Link>
+            <Link href="/admin/memberships">
+              <Button variant="outline" className="w-full justify-start">
+                <Users className="mr-2 h-4 w-4" />
+                View Applications
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

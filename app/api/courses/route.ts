@@ -9,11 +9,11 @@ export async function GET(req: NextRequest) {
     const supabase = await createClient()
 
     let query = supabase
-      .from('courses')
-      .select('id, name, course_type, description')
+      .from('programs')
+      .select('id, title, category, level, duration, mode, fees_ksh')
 
     if (courseType) {
-      query = query.eq('course_type', courseType)
+      query = query.eq('level', courseType)
     }
 
     const { data, error } = await query
@@ -26,7 +26,17 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    return NextResponse.json(data, { status: 200 })
+    const mapped = (data || []).map((program: any) => ({
+      id: program.id,
+      name: program.title,
+      course_type: program.level,
+      category: program.category,
+      duration: program.duration,
+      mode: program.mode,
+      fees_ksh: program.fees_ksh,
+    }))
+
+    return NextResponse.json(mapped, { status: 200 })
   } catch (error) {
     console.error('Error:', error)
     return NextResponse.json(

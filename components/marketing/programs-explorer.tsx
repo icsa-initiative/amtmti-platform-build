@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { PROGRAMS } from '@/lib/programs-data'
-import { PROFESSION_CATEGORIES, PROGRAM_LEVELS, DELIVERY_MODES } from '@/lib/site-data'
+import { PROFESSION_CATEGORIES, PROGRAM_LEVELS, DELIVERY_MODES, PROGRAMME_CATEGORIES } from '@/lib/site-data'
 import { ProgramCard } from './program-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,9 +26,11 @@ export function ProgramsExplorer({
   const [profession, setProfession] = useState(initialProfession)
   const [level, setLevel] = useState(normalizeLevel(initialLevel))
   const [mode, setMode] = useState('')
+  const [programme, setProgramme] = useState('')
 
   const filtered = useMemo(() => {
     return PROGRAMS.filter((p) => {
+      if (programme && (p.programme || '') !== programme) return false
       if (profession && p.category !== profession) return false
       if (level && p.level !== level) return false
       if (mode && p.mode !== mode) return false
@@ -42,7 +44,7 @@ export function ProgramsExplorer({
       }
       return true
     })
-  }, [query, profession, level, mode])
+  }, [query, profession, level, mode, programme])
 
   const hasFilters = profession || level || mode || query
 
@@ -57,6 +59,21 @@ export function ProgramsExplorer({
               Filter programs
             </h2>
           </div>
+
+          <FilterGroup label="Programmes">
+            <FilterChip active={programme === ''} onClick={() => setProgramme('')}>
+              All
+            </FilterChip>
+            {PROGRAMME_CATEGORIES.map((c) => (
+              <FilterChip
+                key={c}
+                active={programme === c}
+                onClick={() => setProgramme(c)}
+              >
+                {c}
+              </FilterChip>
+            ))}
+          </FilterGroup>
 
           <FilterGroup label="Profession">
             <FilterChip active={profession === ''} onClick={() => setProfession('')}>

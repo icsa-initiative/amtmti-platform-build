@@ -26,6 +26,15 @@ export const MAIN_NAV = [
   { label: 'Contact', href: '/contact' },
 ] as const
 
+export const PROGRAMME_CATEGORIES = [
+  'MTM courses',
+  'Professional Development Courses',
+  'Certificate courses',
+  'Short courses',
+  'Diploma courses',
+  'Etc',
+] as const
+
 export const PROFESSION_CATEGORIES = [
   {
     slug: 'clinicians',
