@@ -92,7 +92,7 @@ export default function ContactPage() {
               can.
             </p>
             <div className="mt-6">
-              <ContactForm defaultSubject="General enquiry" />
+              <ContactForm/>
             </div>
           </div>
         </div>
