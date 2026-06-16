@@ -7,6 +7,7 @@ import {
   enrollmentStep2Schema,
   enrollmentStep3Schema,
   enrollmentStep4Schema,
+  normalizeEnrollmentCourseType,
   type FullEnrollment,
 } from '@/lib/validations/enrollment'
 
@@ -50,9 +51,12 @@ export function useEnrollmentForm() {
         return initialFormData
       }
 
+      const parsed = JSON.parse(stored) as Partial<FullEnrollment>
+
       return {
         ...initialFormData,
-        ...(JSON.parse(stored) as Partial<FullEnrollment>),
+        ...parsed,
+        courseType: normalizeEnrollmentCourseType(parsed.courseType),
       }
     } catch {
       return initialFormData
@@ -147,6 +151,10 @@ export function useEnrollmentForm() {
             courseType: formData.courseType,
             courseId: formData.courseId,
             courseName: formData.courseName,
+            programCategory: undefined,
+            programDuration: undefined,
+            programStudyMode: undefined,
+            programFee: undefined,
           })
         } else if (step === 4) {
           enrollmentStep4Schema.parse({

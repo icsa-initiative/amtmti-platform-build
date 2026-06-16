@@ -5,10 +5,16 @@ This document describes how the site sends emails for form submissions, includin
 ## Email Delivery
 
 - All outbound email is sent through the centralized email service in `lib/email/service.ts`.
-- The default provider is `resend` via `RESEND_API_KEY`.
-- Notification emails go to the company/admin address configured as `COMPANY_EMAIL`.
+- The provider is selected in this order: `EMAIL_PROVIDER`, then `RESEND_API_KEY`, then `SENDGRID_API_KEY`, then SMTP via Nodemailer.
+- Notification emails go to the company/admin address configured as `COMPANY_EMAIL`, `NEXT_PUBLIC_AMTMTI_EMAIL`, or `info@amtmti.africa`.
 - Confirmation emails go to the user who submitted the form.
 - HTML emails are rendered with simple inline styles and a consistent AMTMTI branding palette.
+
+## SMTP Setup
+
+- If you use Nodemailer, set `EMAIL_SMTP_HOST`, `EMAIL_SMTP_PORT`, `EMAIL_SMTP_USER`, and `EMAIL_SMTP_PASSWORD`.
+- Gmail users can keep `EMAIL_SMTP_HOST=smtp.gmail.com` and `EMAIL_SMTP_PORT=465`.
+- Set `EMAIL_FROM` to the verified sender inbox for API-based providers such as Resend or SendGrid.
 
 ---
 

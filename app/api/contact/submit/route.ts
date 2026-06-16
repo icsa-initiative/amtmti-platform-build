@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { contactFormSchema } from '@/lib/validations/contact'
 import { sendContactEmails } from '@/lib/email/contact'
+import { insertWithColumnFallback } from '@/lib/supabase/insert-with-fallback'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,57 +10,62 @@ export async function POST(req: NextRequest) {
 
     // Validate data
     const validatedData = contactFormSchema.parse(body)
+    const messageId = crypto.randomUUID()
 
     // Create Supabase client
-    const supabase = await createClient()
+    const supabase = (await createClient()) as any
 
     // Insert into database
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .insert([
-        {
-          name: validatedData.name,
-          email: validatedData.email,
-          inquiry_type: validatedData.inquiryType,
-          message: validatedData.message,
-          phone: validatedData.phone || null,
-          source: 'web_form',
-          email_status: 'pending',
-          status: 'new',
-        },
-      ])
-      .select()
-      .single()
+    const { error, removedColumns } = await insertWithColumnFallback(
+      supabase,
+      'contact_messages',
+      {
+        id: messageId,
+        name: validatedData.name,
+        email: validatedData.email,
+        inquiry_type: validatedData.inquiryType,
+        message: validatedData.message,
+        phone: validatedData.phone || null,
+        source: 'web_form',
+        email_status: 'pending',
+        status: 'new',
+      },
+    )
+
+    if (removedColumns.length > 0) {
+      console.warn('Contact insert dropped unsupported columns', {
+        removedColumns,
+      })
+    }
 
     if (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json(
-        { error: 'Failed to save contact message' },
-        { status: 500 },
-      )
     }
 
     // Send emails
     const emailResult = await sendContactEmails(validatedData)
     const emailStatus = emailResult.adminSent && emailResult.senderSent ? 'sent' : 'failed'
 
-    const { error: updateError } = await supabase
-      .from('contact_messages')
-      .update({ email_status: emailStatus })
-      .eq('id', data.id)
+    if (!error) {
+      const { error: updateError } = await supabase
+        .from('contact_messages')
+        .update({ email_status: emailStatus })
+        .eq('id', messageId)
 
-    if (updateError) {
-      console.error('Failed to update contact email status:', updateError)
+      if (updateError) {
+        console.error('Failed to update contact email status:', updateError)
+      }
     }
 
     return NextResponse.json(
-      {
-        success: true,
-        message: 'Message sent successfully',
-        messageId: data.id,
-      },
-      { status: 201 },
-    )
+        {
+          success: true,
+          message: 'Message sent successfully',
+          messageId,
+          databaseSaved: !error,
+        },
+        { status: 201 },
+      )
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(

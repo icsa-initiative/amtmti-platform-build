@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { newsletterSubscribeSchema } from '@/lib/validations/newsletter'
 import { sendNewsletterEmails } from '@/lib/email/newsletter'
+import { insertWithColumnFallback } from '@/lib/supabase/insert-with-fallback'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,42 +10,32 @@ export async function POST(req: NextRequest) {
 
     // Validate data
     const validatedData = newsletterSubscribeSchema.parse(body)
+    const subscriberId = crypto.randomUUID()
 
     // Create Supabase client
-    const supabase = await createClient()
-
-    // Check for existing subscriber
-    const { data: existingSubscriber } = await supabase
-      .from('newsletter_subscribers')
-      .select('id')
-      .eq('email', validatedData.email)
-      .single()
-
-    if (existingSubscriber) {
-      return NextResponse.json(
-        { error: 'This email is already subscribed to our newsletter' },
-        { status: 409 },
-      )
-    }
+    const supabase = (await createClient()) as any
 
     // Insert into database
-    const { data, error } = await supabase
-      .from('newsletter_subscribers')
-      .insert([
-        {
-          email: validatedData.email,
-          status: 'Active',
-        },
-      ])
-      .select()
-      .single()
+    const { error, removedColumns } = await insertWithColumnFallback(
+      supabase,
+      'newsletter_subscribers',
+      {
+        id: subscriberId,
+        email: validatedData.email,
+        status: 'Active',
+        email_status: 'pending',
+        source: 'web_form',
+      },
+    )
+
+    if (removedColumns.length > 0) {
+      console.warn('Newsletter insert dropped unsupported columns', {
+        removedColumns,
+      })
+    }
 
     if (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json(
-        { error: 'Failed to subscribe to newsletter' },
-        { status: 500 },
-      )
     }
 
     // Send emails
@@ -56,13 +47,14 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      {
-        success: true,
-        message: 'Successfully subscribed to newsletter',
-        subscriberId: data.id,
-      },
-      { status: 201 },
-    )
+        {
+          success: true,
+          message: 'Successfully subscribed to newsletter',
+          subscriberId,
+          databaseSaved: !error,
+        },
+        { status: 201 },
+      )
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(

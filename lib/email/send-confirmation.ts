@@ -4,12 +4,14 @@ export async function sendConfirmationEmail(
   to: string,
   subject: string,
   html: string,
-  fromName = 'AMTMTI',
+  options: { fromName?: string; replyTo?: string; fromEmail?: string } = {},
 ) {
   return sendEmail({
     to,
     subject,
     html,
-    fromName,
+    fromName: options.fromName || 'AMTMTI',
+    fromEmail: options.fromEmail,
+    replyTo: options.replyTo,
   })
 }

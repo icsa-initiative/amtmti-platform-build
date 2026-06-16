@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { membershipApplicationSchema } from '@/lib/validations/membership'
 import { sendMembershipEmails } from '@/lib/email/membership'
+import { insertWithColumnFallback } from '@/lib/supabase/insert-with-fallback'
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,50 +10,36 @@ export async function POST(req: NextRequest) {
 
     // Validate data
     const validatedData = membershipApplicationSchema.parse(body)
+    const applicationId = crypto.randomUUID()
 
     // Create Supabase client
-    const supabase = await createClient()
-
-    // Check for duplicate submissions from same email within 24 hours
-    const { data: recentSubmission, error: checkError } = await supabase
-      .from('membership_applications')
-      .select('id, created_at')
-      .eq('email', validatedData.email)
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-      .limit(1)
-      .single()
-
-    if (recentSubmission && !checkError) {
-      return NextResponse.json(
-        { error: 'You have already submitted a membership application within the last 24 hours' },
-        { status: 429 },
-      )
-    }
+    const supabase = (await createClient()) as any
 
     // Insert into database
-    const { data, error } = await supabase
-      .from('membership_applications')
-      .insert([
-        {
-          full_name: validatedData.fullName,
-          email: validatedData.email,
-          country: validatedData.country,
-          profession: validatedData.profession,
-          membership_tier: validatedData.membershipTier,
-          reason_for_joining: validatedData.reasonForJoining,
-          status: 'Pending',
-          source: 'web_form',
-        },
-      ])
-      .select()
-      .single()
+    const { error, removedColumns } = await insertWithColumnFallback(
+      supabase,
+      'membership_applications',
+      {
+        id: applicationId,
+        name: validatedData.fullName,
+        email: validatedData.email,
+        country: validatedData.country,
+        profession: validatedData.profession,
+        tier: validatedData.membershipTier,
+        reason: validatedData.reasonForJoining,
+        status: 'pending',
+        source: 'web_form',
+      },
+    )
+
+    if (removedColumns.length > 0) {
+      console.warn('Membership insert dropped unsupported columns', {
+        removedColumns,
+      })
+    }
 
     if (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json(
-        { error: 'Failed to save membership application' },
-        { status: 500 },
-      )
     }
 
     // Send emails
@@ -67,7 +54,8 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         message: 'Membership application submitted successfully',
-        applicationId: data.id,
+        applicationId,
+        databaseSaved: !error,
       },
       { status: 201 },
     )

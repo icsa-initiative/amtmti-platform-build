@@ -1,14 +1,16 @@
-import { COMPANY_EMAIL, sendEmail } from './service'
+import { getSupportEmail, sendEmail } from './service'
 
 export async function sendNotificationEmail(
   subject: string,
   html: string,
-  fromName = 'AMTMTI',
+  options: { fromName?: string; replyTo?: string; fromEmail?: string } = {},
 ) {
   return sendEmail({
-    to: COMPANY_EMAIL,
+    to: getSupportEmail(),
     subject,
     html,
-    fromName,
+    fromName: options.fromName || 'AMTMTI',
+    fromEmail: options.fromEmail,
+    replyTo: options.replyTo,
   })
 }

@@ -1,4 +1,4 @@
-import { sendEmail, COMPANY_EMAIL } from './service'
+import { getSupportEmail, sendEmail } from './service'
 import type { ContactForm } from '@/lib/validations/contact'
 
 export async function sendContactEmails(data: ContactForm) {
@@ -47,16 +47,20 @@ export async function sendContactEmails(data: ContactForm) {
 
   const [adminSent, senderSent] = await Promise.all([
     sendEmail({
-      to: COMPANY_EMAIL,
+      to: getSupportEmail(),
       subject: 'New Website Contact Message',
       html: adminEmail,
       fromName: 'AMTMTI',
+      fromEmail: getSupportEmail(),
+      replyTo: data.email,
     }),
     sendEmail({
       to: data.email,
       subject: 'We Have Received Your Message',
       html: senderEmail,
       fromName: 'AMTMTI Support',
+      fromEmail: getSupportEmail(),
+      replyTo: getSupportEmail(),
     }),
   ])
 

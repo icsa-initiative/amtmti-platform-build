@@ -1,6 +1,7 @@
 import { sendNotificationEmail } from './send-notification'
 import { sendConfirmationEmail } from './send-confirmation'
 import { newsletterNotificationTemplate, newsletterConfirmationTemplate } from './templates/newsletter'
+import { getSupportEmail } from './service'
 
 export async function sendNewsletterEmails(email: string) {
   const subscriberData = { email }
@@ -11,13 +12,21 @@ export async function sendNewsletterEmails(email: string) {
     sendNotificationEmail(
       'New Newsletter Subscriber',
       adminHtml,
-      'AMTMTI',
+      {
+        fromName: 'AMTMTI',
+        fromEmail: getSupportEmail(),
+        replyTo: email,
+      },
     ),
     sendConfirmationEmail(
       email,
       'Welcome to the AMTMTI Newsletter',
       subscriberHtml,
-      'AMTMTI Communications',
+      {
+        fromName: 'AMTMTI Communications',
+        fromEmail: getSupportEmail(),
+        replyTo: getSupportEmail(),
+      },
     ),
   ])
 

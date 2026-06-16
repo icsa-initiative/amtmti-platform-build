@@ -1,6 +1,7 @@
 import { sendNotificationEmail } from './send-notification'
 import { sendConfirmationEmail } from './send-confirmation'
 import { membershipNotificationTemplate, membershipConfirmationTemplate } from './templates/membership'
+import { getSupportEmail } from './service'
 import type { MembershipApplication } from '@/lib/validations/membership'
 
 export async function sendMembershipEmails(data: MembershipApplication) {
@@ -11,13 +12,21 @@ export async function sendMembershipEmails(data: MembershipApplication) {
     sendNotificationEmail(
       'New Membership Application',
       adminHtml,
-      'AMTMTI',
+      {
+        fromName: 'AMTMTI',
+        fromEmail: getSupportEmail(),
+        replyTo: data.email,
+      },
     ),
     sendConfirmationEmail(
       data.email,
       'Your AMTMTI Membership Application Has Been Received',
       memberHtml,
-      'AMTMTI Membership',
+      {
+        fromName: 'AMTMTI Membership',
+        fromEmail: getSupportEmail(),
+        replyTo: getSupportEmail(),
+      },
     ),
   ])
 

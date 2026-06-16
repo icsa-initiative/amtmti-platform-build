@@ -1,7 +1,7 @@
 import type { EmailPayload } from './email-types'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const EMAIL_FROM = process.env.EMAIL_FROM
+const EMAIL_FROM = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || process.env.NEXT_PUBLIC_AMTMTI_EMAIL || 'info@amtmti.africa'
 const MAX_RETRIES = 2
 
 export async function sendEmailResend(
@@ -26,10 +26,17 @@ export async function sendEmailResend(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: payload.fromName ? `${payload.fromName} <${EMAIL_FROM}>` : EMAIL_FROM,
+        from: payload.fromEmail
+          ? payload.fromName
+            ? `${payload.fromName} <${payload.fromEmail}>`
+            : payload.fromEmail
+          : payload.fromName
+            ? `${payload.fromName} <${EMAIL_FROM}>`
+            : EMAIL_FROM,
         to: payload.to,
         subject: payload.subject,
         html: payload.html,
+        reply_to: payload.replyTo || undefined,
       }),
     })
 

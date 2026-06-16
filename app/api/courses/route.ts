@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeEnrollmentCourseType } from '@/lib/validations/enrollment'
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const courseType = searchParams.get('courseType')
+    const rawCourseType = searchParams.get('courseType')
+    const courseType = rawCourseType
+      ? normalizeEnrollmentCourseType(rawCourseType)
+      : null
 
     const supabase = await createClient()
 
