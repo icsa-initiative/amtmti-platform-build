@@ -159,7 +159,7 @@ async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
 async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
   const apiKey = env('SENDGRID_API_KEY')
   const emailFrom = options.fromEmail || getSupportEmail()
-  const replyTo = options.replyTo || getSupportEmail()
+  const replyTo = options.replyTo || undefined
 
   if (!apiKey) {
     console.error('SendGrid API key not configured')
@@ -214,5 +214,5 @@ async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
   }
 }
 
-export const EMAIL_FROM = getSenderEmail()
-export const COMPANY_EMAIL = getSupportEmail()
+// Use getSenderEmail() and getSupportEmail() directly at call sites
+// to ensure env vars are read lazily at request time, not at module load time.
