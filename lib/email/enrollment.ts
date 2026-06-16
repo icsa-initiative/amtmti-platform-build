@@ -1,6 +1,7 @@
 import { sendNotificationEmail } from './send-notification'
 import { sendConfirmationEmail } from './send-confirmation'
 import { enrollmentNotificationTemplate, enrollmentConfirmationTemplate } from './templates/enrollment'
+import { getSupportEmail } from './service'
 import type { FullEnrollment } from '@/lib/validations/enrollment'
 
 export async function sendEnrollmentEmails(data: FullEnrollment & {
@@ -33,13 +34,21 @@ export async function sendEnrollmentEmails(data: FullEnrollment & {
     sendNotificationEmail(
       'New Program Enrollment Application',
       adminHtml,
-      'AMTMTI',
+      {
+        fromName: 'AMTMTI',
+        fromEmail: getSupportEmail(),
+        replyTo: data.email,
+      },
     ),
     sendConfirmationEmail(
       data.email,
       'Your AMTMTI Program Application Has Been Received',
       applicantHtml,
-      'AMTMTI Admissions',
+      {
+        fromName: 'AMTMTI Admissions',
+        fromEmail: getSupportEmail(),
+        replyTo: getSupportEmail(),
+      },
     ),
   ])
 

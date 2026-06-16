@@ -4,24 +4,25 @@ import { verifyAdminToken } from '@/lib/admin-token'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify admin authentication
-    const token = req.cookies.get('admin_token')?.value
-    if (!token || !verifyAdminToken(token)) {
+    const token = req.cookies.get('amtmti_admin')?.value
+    if (!token || !(await verifyAdminToken(token))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 },
       )
     }
 
-    const supabase = await createClient()
+    const { id } = await params
+    const supabase = (await createClient()) as any
 
     const { data, error } = await supabase
       .from('enrollment_applications')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -44,12 +45,12 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Verify admin authentication
-    const token = req.cookies.get('admin_token')?.value
-    if (!token || !verifyAdminToken(token)) {
+    const token = req.cookies.get('amtmti_admin')?.value
+    if (!token || !(await verifyAdminToken(token))) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 },
@@ -58,12 +59,13 @@ export async function PATCH(
 
     const body = await req.json()
 
-    const supabase = await createClient()
+    const { id } = await params
+    const supabase = (await createClient()) as any
 
     const { data, error } = await supabase
       .from('enrollment_applications')
       .update(body)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 

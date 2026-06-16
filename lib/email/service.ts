@@ -1,4 +1,6 @@
 import { sendEmailResend } from './resend'
+import fs from 'fs'
+import path from 'path'
 import nodemailer from 'nodemailer'
 
 export interface EmailOptions {
@@ -6,10 +8,87 @@ export interface EmailOptions {
   subject: string
   html: string
   fromName?: string
+  fromEmail?: string
+  replyTo?: string
+}
+
+const runtimeEnvCache = new Map<string, string>()
+
+function readRuntimeEnvValue(key: string) {
+  if (runtimeEnvCache.has(key)) {
+    return runtimeEnvCache.get(key)
+  }
+
+  const envFiles = [
+    path.join(process.cwd(), '.env.local'),
+    path.join(process.cwd(), '.env.production'),
+    path.join(process.cwd(), '.env'),
+  ]
+
+  for (const envFile of envFiles) {
+    if (!fs.existsSync(envFile)) {
+      continue
+    }
+
+    const contents = fs.readFileSync(envFile, 'utf8')
+    const line = contents
+      .split(/\r?\n/)
+      .find((entry) => entry.startsWith(`${key}=`))
+
+    if (!line) {
+      continue
+    }
+
+    const rawValue = line.slice(key.length + 1).trim()
+    const unquoted = rawValue.replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1')
+    runtimeEnvCache.set(key, unquoted)
+    return unquoted
+  }
+
+  runtimeEnvCache.set(key, '')
+  return ''
+}
+
+function env(key: string) {
+  return process.env[key] || readRuntimeEnvValue(key)
+}
+
+function resolveEmailProvider() {
+  const provider = env('EMAIL_PROVIDER')?.trim().toLowerCase()
+
+  if (provider) {
+    return provider
+  }
+
+  if (env('RESEND_API_KEY')) {
+    return 'resend'
+  }
+
+  if (env('SENDGRID_API_KEY')) {
+    return 'sendgrid'
+  }
+
+  return 'nodemailer'
+}
+
+export function getSupportEmail() {
+  return (
+    env('COMPANY_EMAIL') ||
+    env('NEXT_PUBLIC_AMTMTI_EMAIL') ||
+    'info@amtmti.africa'
+  )
+}
+
+export function getSenderEmail() {
+  return (
+    env('EMAIL_FROM') ||
+    env('EMAIL_SMTP_USER') ||
+    getSupportEmail()
+  )
 }
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
-  const provider = process.env.EMAIL_PROVIDER || 'nodemailer'
+  const provider = resolveEmailProvider()
 
   if (provider === 'nodemailer') {
     return sendEmailNodemailer(options)
@@ -28,9 +107,15 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 }
 
 async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
-  const smtpUser = process.env.EMAIL_SMTP_USER || process.env.EMAIL_FROM || ''
-  const smtpPassword = process.env.EMAIL_SMTP_PASSWORD || process.env.GMAIL_PASSWORD || ''
-  const emailFrom = process.env.EMAIL_FROM || smtpUser
+  const smtpUser = env('EMAIL_SMTP_USER') || env('EMAIL_FROM') || ''
+  const smtpPassword = env('EMAIL_SMTP_PASSWORD') || env('GMAIL_PASSWORD') || ''
+  const smtpHost = env('EMAIL_SMTP_HOST') || 'smtp.gmail.com'
+  const smtpPort = Number(env('EMAIL_SMTP_PORT') || '465')
+  const smtpSecure =
+    env('EMAIL_SMTP_SECURE') != null
+      ? env('EMAIL_SMTP_SECURE') === 'true'
+      : smtpPort === 465
+  const replyTo = options.replyTo || options.fromEmail || getSupportEmail()
 
   if (!smtpPassword) {
     console.error('SMTP password is not configured. Set EMAIL_SMTP_PASSWORD or GMAIL_PASSWORD.')
@@ -44,9 +129,9 @@ async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
         user: smtpUser,
         pass: smtpPassword,
@@ -54,10 +139,14 @@ async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
     })
 
     await transporter.sendMail({
-      from: options.fromName ? `${options.fromName} <${emailFrom}>` : emailFrom,
+      from: {
+        name: options.fromName || 'AMTMTI',
+        address: smtpUser,
+      },
       to: options.to,
       subject: options.subject,
       html: options.html,
+      replyTo,
     })
 
     return true
@@ -68,8 +157,9 @@ async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
 }
 
 async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
-  const apiKey = process.env.SENDGRID_API_KEY
-  const emailFrom = process.env.EMAIL_FROM || ''
+  const apiKey = env('SENDGRID_API_KEY')
+  const emailFrom = options.fromEmail || getSupportEmail()
+  const replyTo = options.replyTo || getSupportEmail()
 
   if (!apiKey) {
     console.error('SendGrid API key not configured')
@@ -96,6 +186,12 @@ async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
           },
         ],
         from: { email: emailFrom, name: options.fromName || 'AMTMTI' },
+        reply_to: replyTo
+          ? {
+              email: replyTo,
+              name: options.fromName || 'AMTMTI',
+            }
+          : undefined,
         content: [
           {
             type: 'text/html',
@@ -118,5 +214,5 @@ async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {
   }
 }
 
-export const EMAIL_FROM = process.env.EMAIL_FROM || 'vickamworkpro@gmail.com'
-export const COMPANY_EMAIL = process.env.COMPANY_EMAIL || 'vickamworkpro@gmail.com'
+export const EMAIL_FROM = getSenderEmail()
+export const COMPANY_EMAIL = getSupportEmail()

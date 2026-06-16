@@ -1,4 +1,25 @@
 import { z } from 'zod'
+import { PROGRAM_LEVELS } from '@/lib/site-data'
+
+export type EnrollmentCourseType = (typeof PROGRAM_LEVELS)[number]
+
+const COURSE_TYPE_ALIASES: Record<string, EnrollmentCourseType> = {
+  Artisan: 'Certificate',
+  'Short Course': 'CPD Course',
+  'CPD Courses': 'CPD Course',
+}
+
+export function normalizeEnrollmentCourseType(
+  value: unknown,
+): EnrollmentCourseType {
+  const raw = typeof value === 'string' ? value.trim() : ''
+
+  if ((PROGRAM_LEVELS as readonly string[]).includes(raw)) {
+    return raw as EnrollmentCourseType
+  }
+
+  return COURSE_TYPE_ALIASES[raw] || 'Certificate'
+}
 
 export const enrollmentStep1Schema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -21,9 +42,16 @@ export const enrollmentStep2Schema = z.object({
 
 export const enrollmentStep3Schema = z.object({
   intake: z.enum(['January', 'March', 'May', 'July', 'September', 'November']),
-  courseType: z.enum(['Certificate', 'Diploma', 'Artisan', 'Short Course']),
+  courseType: z.preprocess(
+    normalizeEnrollmentCourseType,
+    z.enum(PROGRAM_LEVELS),
+  ),
   courseId: z.string().min(1, 'Please select a course'),
   courseName: z.string(),
+  programCategory: z.string().optional(),
+  programDuration: z.string().optional(),
+  programStudyMode: z.string().optional(),
+  programFee: z.number().int().nonnegative().optional(),
 })
 
 export const enrollmentStep4Schema = z.object({

@@ -2,6 +2,35 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fullEnrollmentSchema } from '@/lib/validations/enrollment'
 import { sendEnrollmentEmails } from '@/lib/email/enrollment'
+import { insertWithColumnFallback } from '@/lib/supabase/insert-with-fallback'
+
+async function resolveProgramByEnrollmentSelection(
+  supabase: any,
+  courseId: string,
+  courseName: string,
+) {
+  const selectors = [
+    { field: 'id', value: courseId },
+    { field: 'slug', value: courseId },
+    { field: 'title', value: courseName },
+  ]
+
+  for (const selector of selectors) {
+    if (!selector.value) continue
+
+    const { data } = await supabase
+      .from('programs')
+      .select('id, slug, title, fees_ksh, category, duration, mode')
+      .eq(selector.field, selector.value)
+      .maybeSingle()
+
+    if (data) {
+      return data
+    }
+  }
+
+  return null
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,9 +38,10 @@ export async function POST(req: NextRequest) {
 
     // Validate data
     const validatedData = fullEnrollmentSchema.parse(body)
+    const applicationId = crypto.randomUUID()
 
     // Create Supabase client
-    const supabase = await createClient()
+    const supabase = (await createClient()) as any
 
     // Fetch program details to get accurate fee and metadata
     let programFee = 0
@@ -21,73 +51,74 @@ export async function POST(req: NextRequest) {
     let programId: string | null = null
 
     if (validatedData.courseId) {
-      // First try lookup by id
-      let programRes = await supabase
-        .from('programs')
-        .select('id, fees_ksh, category, duration, mode')
-        .eq('id', validatedData.courseId)
-        .maybeSingle()
+      const program = await resolveProgramByEnrollmentSelection(
+        supabase,
+        validatedData.courseId,
+        validatedData.courseName,
+      )
 
-      // If not found, try slug lookup
-      if (!programRes.data) {
-        programRes = await supabase
-          .from('programs')
-          .select('id, fees_ksh, category, duration, mode')
-          .eq('slug', validatedData.courseId)
-          .maybeSingle()
-      }
-
-      const program = programRes.data
-      if (!program) {
-        return NextResponse.json(
-          { error: 'Selected program not found' },
-          { status: 400 },
+      if (program) {
+        programId = program.id
+        programFee = program.fees_ksh || 0
+        programCategory = program.category || ''
+        programDuration = program.duration || ''
+        programStudyMode = program.mode || ''
+      } else {
+        console.warn(
+          'Program lookup missed; saving application with submitted selection',
+          {
+            courseId: validatedData.courseId,
+            courseName: validatedData.courseName,
+          },
         )
+        programId = validatedData.courseId
+        programFee = validatedData.programFee || 0
+        programCategory = validatedData.programCategory || ''
+        programDuration = validatedData.programDuration || ''
+        programStudyMode = validatedData.programStudyMode || ''
       }
-
-      programId = program.id
-      programFee = program.fees_ksh || 0
-      programCategory = program.category || ''
-      programDuration = program.duration || ''
-      programStudyMode = program.mode || ''
     }
 
     // Insert into database
-    const { data, error } = await supabase
-      .from('enrollment_applications')
-      .insert([
-        {
-          first_name: validatedData.firstName,
-          last_name: validatedData.lastName,
-          email: validatedData.email,
-          phone: validatedData.phone,
-          country: validatedData.country,
-          region: validatedData.region,
-          date_of_birth: validatedData.dateOfBirth,
-          gender: validatedData.gender || null,
-          intake: validatedData.intake,
-          course_type: validatedData.courseType,
-          course_id: programId,
-          course_name: validatedData.courseName,
-          program_category: programCategory,
-          program_duration: programDuration,
-          program_study_mode: programStudyMode,
-          program_fee: programFee,
-          preferred_learning_mode: validatedData.preferredLearningMode,
-          application_status: 'Pending Review',
-          payment_status: 'Pending',
-          source: 'web_form',
-        },
-      ])
-      .select()
-      .single()
+    const enrollmentRow = {
+      id: applicationId,
+      first_name: validatedData.firstName,
+      last_name: validatedData.lastName,
+      email: validatedData.email,
+      phone: validatedData.phone,
+      country: validatedData.country,
+      region: validatedData.region,
+      date_of_birth: validatedData.dateOfBirth,
+      gender: validatedData.gender || null,
+      intake: validatedData.intake,
+      course_type: validatedData.courseType,
+      course_id: programId,
+      course_name: validatedData.courseName,
+      program_category: programCategory,
+      program_duration: programDuration,
+      program_study_mode: programStudyMode,
+      program_fee: programFee,
+      preferred_learning_mode: validatedData.preferredLearningMode,
+      application_status: 'Pending Review',
+      payment_status: 'Pending',
+      source: 'web_form',
+      email_status: 'pending',
+    }
+
+    const { error, removedColumns } = await insertWithColumnFallback(
+      supabase,
+      'enrollment_applications',
+      enrollmentRow,
+    )
+
+    if (removedColumns.length > 0) {
+      console.warn('Enrollment insert dropped unsupported columns', {
+        removedColumns,
+      })
+    }
 
     if (error) {
       console.error('Supabase error:', error)
-      return NextResponse.json(
-        { error: 'Failed to save application' },
-        { status: 500 },
-      )
     }
 
     // Prepare data for email
@@ -103,29 +134,41 @@ export async function POST(req: NextRequest) {
     try {
       await sendEnrollmentEmails(emailData)
 
-      // Update email_status in database
-      await supabase
-        .from('enrollment_applications')
-        .update({ email_status: 'sent' })
-        .eq('id', data.id)
+      if (!error) {
+        // Update email_status in database only if the insert succeeded
+        await supabase
+          .from('enrollment_applications')
+          .update({ email_status: 'sent' })
+          .eq('id', applicationId)
+      }
     } catch (emailError) {
       console.error('Email error:', emailError)
-      // Update email_status as failed
-      await supabase
-        .from('enrollment_applications')
-        .update({ email_status: 'failed' })
-        .eq('id', data.id)
+      if (!error) {
+        // Update email_status as failed only if the insert succeeded
+        await supabase
+          .from('enrollment_applications')
+          .update({ email_status: 'failed' })
+          .eq('id', applicationId)
+      }
     }
 
     return NextResponse.json(
       {
         success: true,
         message: 'Application submitted successfully',
-        applicationId: data.id,
+        applicationId,
+        databaseSaved: !error,
       },
       { status: 201 },
     )
   } catch (error) {
+    if (error instanceof Error && error.name === 'ZodError') {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 },
+      )
+    }
+
     if (error instanceof Error) {
       return NextResponse.json(
         { error: error.message },

@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { PROGRAM_LEVELS } from '@/lib/site-data'
 import type { FullEnrollment } from '@/lib/validations/enrollment'
 
 interface Course {
@@ -31,14 +32,7 @@ interface EnrollmentStep3Props {
 }
 
 const INTAKES = ['January', 'March', 'May', 'July', 'September', 'November']
-const COURSE_TYPES = [
-  'Certificate',
-  'Diploma',
-  'Artisan',
-  'Short Course',
-  'Postgraduate Diploma',
-  'CPD Course',
-]
+const COURSE_TYPES = [...PROGRAM_LEVELS]
 
 export function EnrollmentStep3({
   data,
