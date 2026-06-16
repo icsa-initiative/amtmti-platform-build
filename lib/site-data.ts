@@ -113,7 +113,7 @@ export const RESEARCH_STATS = [
 
 export const RESEARCH_AREAS = [
   {
-    title: 'Medication Safety',
+    title: 'Medication Therapy',
     description: 'Reducing preventable harm through systems-based safety research.',
     icon: 'ShieldPlus',
     image: '/images/medication_safety.png',

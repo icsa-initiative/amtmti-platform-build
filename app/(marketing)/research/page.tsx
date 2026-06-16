@@ -40,7 +40,7 @@ const PUBLICATIONS = [
   },
   {
     title: 'Adherence interventions in chronic disease: a systematic review',
-    journal: 'Journal of Medication Safety',
+    journal: 'Journal of Medication Therapy',
     year: '2025',
     type: 'Systematic Review',
   },
