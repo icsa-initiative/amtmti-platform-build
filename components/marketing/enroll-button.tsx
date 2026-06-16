@@ -1,18 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { EnrollmentModal } from './enrollment-modal'
 import { createClient } from '@/lib/supabase/client'
 
 import type { Program } from '@/lib/programs-data'
 
+type EnrollmentProgram = {
+  slug: string
+  title?: string
+  level?: Program['level']
+}
+
 interface EnrollButtonProps {
   className?: string
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'default' | 'sm' | 'lg' | 'icon'
-  program?: Program
+  program?: EnrollmentProgram
 }
 
 export function EnrollButton({
@@ -21,13 +27,20 @@ export function EnrollButton({
   size = 'default',
   program,
 }: EnrollButtonProps) {
+  const pathname = usePathname()
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
   const [user, setUser] = useState<any | null | undefined>(undefined)
   const [autoOpened, setAutoOpened] = useState(false)
 
-  const programRedirect = program
-    ? `/programs/${program.slug}?enroll=true`
+  const inferredProgramSlug = useMemo(() => {
+    if (program?.slug) return program.slug
+    const match = pathname?.match(/^\/programs\/([^/]+)$/)
+    return match?.[1] ?? null
+  }, [pathname, program])
+
+  const programRedirect = inferredProgramSlug
+    ? `/programs/${inferredProgramSlug}?enroll=true`
     : '/programs'
   const loginUrl = `/login?redirect=${encodeURIComponent(programRedirect)}`
 

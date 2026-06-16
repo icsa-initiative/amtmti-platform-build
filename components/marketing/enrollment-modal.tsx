@@ -25,7 +25,11 @@ import type { Program } from '@/lib/programs-data'
 interface EnrollmentModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  initialProgram?: Program | null
+  initialProgram?: {
+    slug: string
+    title?: string
+    level?: Program['level']
+  } | null
 }
 
 interface ProgramDetails {
