@@ -1,16 +1,15 @@
 import { sendEmailResend } from './resend'
+import nodemailer from 'nodemailer'
 
-const EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'resend'
-const EMAIL_FROM = process.env.EMAIL_FROM
-const COMPANY_EMAIL = process.env.COMPANY_EMAIL
+const EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'nodemailer'
+const EMAIL_FROM = process.env.EMAIL_FROM || 'vickamworkpro@gmail.com'
+const COMPANY_EMAIL = process.env.COMPANY_EMAIL || 'vickamworkpro@gmail.com'
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
+const SMTP_USER = process.env.EMAIL_SMTP_USER || 'vickamworkpro@gmail.com'
+const SMTP_PASSWORD = process.env.EMAIL_SMTP_PASSWORD || process.env.GMAIL_PASSWORD || ''
 
-if (!EMAIL_FROM) {
-  console.warn('EMAIL_FROM is not configured. Please set EMAIL_FROM in environment variables.')
-}
-
-if (!COMPANY_EMAIL) {
-  console.warn('COMPANY_EMAIL is not configured. Please set COMPANY_EMAIL in environment variables.')
+if (!SMTP_PASSWORD) {
+  console.warn('EMAIL SMTP password is not configured. Set EMAIL_SMTP_PASSWORD or GMAIL_PASSWORD in environment variables.')
 }
 
 export interface EmailOptions {
@@ -21,6 +20,10 @@ export interface EmailOptions {
 }
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  if (EMAIL_PROVIDER === 'nodemailer') {
+    return sendEmailNodemailer(options)
+  }
+
   if (EMAIL_PROVIDER === 'resend') {
     return sendEmailResend(options)
   }
@@ -31,6 +34,37 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
   console.warn(`Unknown email provider: ${EMAIL_PROVIDER}`)
   return false
+}
+
+async function sendEmailNodemailer(options: EmailOptions): Promise<boolean> {
+  if (!SMTP_PASSWORD) {
+    console.error('SMTP password is not configured; email could not be sent.')
+    return false
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASSWORD,
+      },
+    })
+
+    await transporter.sendMail({
+      from: options.fromName ? `${options.fromName} <${EMAIL_FROM}>` : EMAIL_FROM,
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    })
+
+    return true
+  } catch (error) {
+    console.error('Error sending email with Nodemailer:', error)
+    return false
+  }
 }
 
 async function sendEmailSendGrid(options: EmailOptions): Promise<boolean> {

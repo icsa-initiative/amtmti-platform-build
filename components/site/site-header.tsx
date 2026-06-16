@@ -141,6 +141,11 @@ export function SiteHeader() {
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
 
+  const currentProgramSlug = (() => {
+    const match = pathname?.match(/^\/programs\/([^/]+)$/)
+    return match?.[1]
+  })()
+
   // Filter out E-Learning from public navigation
   const publicNav = MAIN_NAV.filter(item => item.label !== 'E-Learning')
 
@@ -231,7 +236,10 @@ export function SiteHeader() {
                 </Link>
               </div>
             )}
-            <EnrollButton className="hidden bg-gold text-gold-foreground hover:bg-gold/90 md:inline-flex" />
+            <EnrollButton
+              className="hidden bg-gold text-gold-foreground hover:bg-gold/90 md:inline-flex"
+              program={currentProgramSlug ? { slug: currentProgramSlug } : undefined}
+            />
 
             {/* Mobile */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -266,6 +274,7 @@ export function SiteHeader() {
                 <div className="flex flex-col gap-2 border-t p-4">
                   <EnrollButton
                     className="w-full bg-gold text-gold-foreground hover:bg-gold/90"
+                    program={currentProgramSlug ? { slug: currentProgramSlug } : undefined}
                   />
                   {user ? (
                     <button
