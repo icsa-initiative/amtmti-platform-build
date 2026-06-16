@@ -37,7 +37,7 @@ insert into public.programs (slug, title, category, category_label, level, progr
       'Live sessions and interactive clinics with faculty and peers.',
       'Applied practice tasks that translate learning into patient impact.'
     ], true),
-  ('medication-safety-clinicians', 'Medication Safety for Clinicians', 'clinicians', 'Clinicians', 'CPD Course', 'Professional Development Courses', 'Online', '4 weeks', 18000,
+  ('medication-safety-clinicians', 'Medication Therapy for Clinicians', 'clinicians', 'Clinicians', 'CPD Course', 'Professional Development Courses', 'Online', '4 weeks', 18000,
     'A focused CPD course equipping clinicians with practical medication safety and prescribing tools.',
     array['Identify high-risk prescribing patterns','Apply safe prescribing frameworks','Reduce preventable medication harm'], '/images/MTM_for_Clinicians.png', 'Rolling enrolment', array[
       'Guided modules with readings, case studies, and assessments.',
@@ -165,7 +165,7 @@ on conflict do nothing;
 -- ---------------------------------------------------------------------------
 insert into public.news (slug, title, excerpt, body, category, featured) values
   ('amtmti-expands-to-12-countries', 'AMTMTI Expands MTM Training to 12 African Countries', 'A new wave of partnerships brings accredited training to thousands more professionals.', 'AMTMTI is proud to announce expansion across 12 countries through new institutional partnerships...', 'Partnerships', true),
-  ('medication-safety-symposium-2026', 'Annual Medication Safety Symposium Returns', 'Leading researchers gather to share the latest evidence in medication safety.', 'The 2026 symposium will convene experts from across the continent...', 'Events', false),
+  ('medication-safety-symposium-2026', 'Annual Medication Therapy Symposium Returns', 'Leading researchers gather to share the latest evidence in medication safety.', 'The 2026 symposium will convene experts from across the continent...', 'Events', false),
   ('new-postgraduate-cohort', 'New Postgraduate Diploma Cohort Opens', 'Applications are now open for the flagship postgraduate pathway.', 'Our flagship Postgraduate Diploma in MTM welcomes its newest cohort...', 'Announcements', false)
 on conflict (slug) do nothing;
 
@@ -173,7 +173,7 @@ on conflict (slug) do nothing;
 -- Events
 -- ---------------------------------------------------------------------------
 insert into public.events (title, description, location, starts_at, speakers) values
-  ('Medication Safety Symposium 2026', 'A continent-wide gathering of MTM researchers and practitioners.', 'Nairobi, Kenya', now() + interval '45 days', array['Prof. Wanjiru Kamau','Dr. Fatima El-Hassan']),
+  ('Medication Therapy Symposium 2026', 'A continent-wide gathering of MTM researchers and practitioners.', 'Nairobi, Kenya', now() + interval '45 days', array['Prof. Wanjiru Kamau','Dr. Fatima El-Hassan']),
   ('Clinical Pharmacy Masterclass', 'Hands-on training for advanced clinical practice.', 'Online', now() + interval '20 days', array['Dr. Samuel Okoro'])
 on conflict do nothing;
 
@@ -181,7 +181,7 @@ on conflict do nothing;
 -- Research projects & publications
 -- ---------------------------------------------------------------------------
 insert into public.research_projects (title, area, summary, status) values
-  ('Multi-country Medication Safety Surveillance', 'Medication Safety', 'Establishing a shared adverse event reporting framework.', 'active'),
+  ('Multi-country Medication Therapy Surveillance', 'Medication Therapy', 'Establishing a shared adverse event reporting framework.', 'active'),
   ('Adherence Interventions in Chronic Care', 'Medication Adherence', 'Evaluating behavioural interventions across primary care.', 'active'),
   ('Clinical Pharmacy Integration Study', 'Clinical Pharmacy', 'Measuring outcomes of embedded pharmacists in wards.', 'completed')
 on conflict do nothing;

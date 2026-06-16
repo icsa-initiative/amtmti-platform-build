@@ -117,7 +117,7 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="absolute -bottom-5 left-5 rounded-2xl bg-card p-4 text-card-foreground shadow-xl ring-1 ring-border"
           >
-            <p className="text-xs font-medium text-muted-foreground">Accredited & recognised</p>
+            <p className="text-xs font-medium text-muted-foreground">Recognised</p>
             <p className="font-heading text-lg font-bold text-primary">Pan-African MTM Pathways</p>
           </motion.div>
         </motion.div>
