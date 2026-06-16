@@ -1,56 +1,44 @@
-import { sendNotificationEmail } from './send-notification'
-import { sendConfirmationEmail } from './send-confirmation'
-import { enrollmentNotificationTemplate, enrollmentConfirmationTemplate } from './templates/enrollment'
-import { getSupportEmail } from './service'
-import type { FullEnrollment } from '@/lib/validations/enrollment'
+import nodemailer from 'nodemailer';
+import { getSupportEmail } from './service';
 
-export async function sendEnrollmentEmails(data: FullEnrollment & {
-  programCategory?: string
-  programDuration?: string
-  programStudyMode?: string
-  programFee?: number
-}) {
-  const enrollmentData = {
-    fullName: `${data.firstName} ${data.lastName}`,
-    email: data.email,
-    phone: data.phone,
-    country: data.country,
-    region: data.region,
-    dateOfBirth: data.dateOfBirth,
-    gender: data.gender,
-    program: `${data.courseName} (${data.courseType})`,
-    programCategory: data.programCategory || '',
-    programDuration: data.programDuration || '',
-    programMode: data.programStudyMode || '',
-    programFee: data.programFee || 0,
-    intakeMonth: data.intake,
-    preferredLearningMode: data.preferredLearningMode,
+interface EmailOptions {
+  fromName?: string;
+  fromEmail?: string;
+  replyTo?: string;
+}
+
+export async function sendConfirmationEmail(
+  toEmail: string, // 👈 This is the argument passed from your enrollment route
+  subject: string,
+  htmlContent: string,
+  options?: EmailOptions
+) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: Number(process.env.SMTP_PORT) || 465,
+      secure: true,
+      auth: {
+        user: process.env.SMTP_USER || 'vickamworkpro@gmail.com',
+        pass: process.env.SMTP_PASS, // Your App Password
+      },
+    });
+
+    const fromName = options?.fromName || 'AMTMTI Admissions';
+    const fromEmail = options?.fromEmail || getSupportEmail();
+    const replyTo = options?.replyTo || getSupportEmail();
+
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: toEmail, // ❌ Previously hardcoded to an admin email. Fixed to use the argument dynamically.
+      replyTo: replyTo,
+      subject: subject,
+      html: htmlContent,
+    });
+
+    return !!info.messageId;
+  } catch (error) {
+    console.error('Error in sendConfirmationEmail:', error);
+    return false;
   }
-
-  const adminHtml = enrollmentNotificationTemplate(enrollmentData)
-  const applicantHtml = enrollmentConfirmationTemplate(enrollmentData)
-
-  const [adminSent, applicantSent] = await Promise.all([
-    sendNotificationEmail(
-      'New Program Enrollment Application',
-      adminHtml,
-      {
-        fromName: 'AMTMTI',
-        fromEmail: getSupportEmail(),
-        replyTo: data.email,
-      },
-    ),
-    sendConfirmationEmail(
-      data.email,
-      'Your AMTMTI Program Application Has Been Received',
-      applicantHtml,
-      {
-        fromName: 'AMTMTI Admissions',
-        fromEmail: getSupportEmail(),
-        replyTo: getSupportEmail(),
-      },
-    ),
-  ])
-
-  return { adminSent, applicantSent }
 }
