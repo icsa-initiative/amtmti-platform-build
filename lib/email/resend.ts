@@ -1,13 +1,19 @@
 import type { EmailPayload } from './email-types'
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const EMAIL_FROM = process.env.EMAIL_FROM || process.env.COMPANY_EMAIL || process.env.NEXT_PUBLIC_AMTMTI_EMAIL || 'info@amtmti.africa'
 const MAX_RETRIES = 2
 
 export async function sendEmailResend(
   payload: EmailPayload,
   retries = MAX_RETRIES,
 ): Promise<boolean> {
+  // Read lazily so the value is available after env is fully loaded
+  const RESEND_API_KEY = process.env.RESEND_API_KEY
+  const EMAIL_FROM =
+    process.env.EMAIL_FROM ||
+    process.env.COMPANY_EMAIL ||
+    process.env.NEXT_PUBLIC_AMTMTI_EMAIL ||
+    'info@amtmti.africa'
+
   if (!RESEND_API_KEY) {
     console.error('Resend API key is not configured.')
     return false

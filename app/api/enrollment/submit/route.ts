@@ -132,13 +132,14 @@ export async function POST(req: NextRequest) {
 
     // Send emails
     try {
-      await sendEnrollmentEmails(emailData)
+      const { adminSent, applicantSent } = await sendEnrollmentEmails(emailData)
+      const emailStatus = adminSent && applicantSent ? 'sent' : 'failed'
 
       if (!error) {
         // Update email_status in database only if the insert succeeded
         await supabase
           .from('enrollment_applications')
-          .update({ email_status: 'sent' })
+          .update({ email_status: emailStatus })
           .eq('id', applicationId)
       }
     } catch (emailError) {
@@ -161,10 +162,10 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     )
-  } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
+  } catch (error: any) {
+    if (error?.name === 'ZodError') {
       return NextResponse.json(
-        { error: error.message },
+        { error: 'Validation failed', issues: error.errors },
         { status: 400 },
       )
     }
@@ -172,7 +173,7 @@ export async function POST(req: NextRequest) {
     if (error instanceof Error) {
       return NextResponse.json(
         { error: error.message },
-        { status: 400 },
+        { status: 500 },
       )
     }
 
