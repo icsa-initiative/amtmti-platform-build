@@ -34,6 +34,12 @@ export function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (formData.message.trim().length < 10) {
+      toast.error('Message must be at least 10 characters')
+      return
+    }
+
     setIsLoading(true)
 
     try {
