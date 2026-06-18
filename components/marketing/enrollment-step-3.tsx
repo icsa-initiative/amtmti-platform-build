@@ -121,9 +121,12 @@ export function EnrollmentStep3({
               const selectedCourse = courses.find(
                 (c) => c.id === value || c.slug === value,
               )
-              handleChange('courseId', value)
               if (selectedCourse) {
-                handleChange('courseName', selectedCourse.name)
+                onDataChange({
+                  ...data,
+                  courseId: selectedCourse.id,
+                  courseName: selectedCourse.name,
+                })
               }
             }}
             disabled={lockedProgram || loadingCourses || filteredCourses.length === 0}

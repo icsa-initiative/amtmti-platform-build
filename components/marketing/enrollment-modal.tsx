@@ -179,23 +179,23 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl border-0 p-0">
-        <div className="overflow-hidden">
-          {/* Progress Bar */}
-          <div className="bg-primary p-6">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-primary-foreground">
-                {showSuccess ? 'Complete' : `Step ${step} of 5`}
-              </span>
-              <span className="text-xs text-primary-foreground/70">
-                {Math.round(progressPercentage)}%
-              </span>
-            </div>
-            <Progress value={progressPercentage} className="h-1 bg-primary-foreground/20" />
+      <DialogContent className="flex h-auto max-h-[90vh] max-w-3xl flex-col border-0 p-0">
+        {/* Progress Bar - Fixed Header */}
+        <div className="bg-primary p-6">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-medium text-primary-foreground">
+              {showSuccess ? 'Complete' : `Step ${step} of 5`}
+            </span>
+            <span className="text-xs text-primary-foreground/70">
+              {Math.round(progressPercentage)}%
+            </span>
           </div>
+          <Progress value={progressPercentage} className="h-1 bg-primary-foreground/20" />
+        </div>
 
-          {/* Content */}
-          <div className="min-h-150 p-8">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8">
             <AnimatePresence mode="wait">
               {showSuccess ? (
                 <motion.div
@@ -252,40 +252,40 @@ export function EnrollmentModal({ open, onOpenChange, initialProgram }: Enrollme
               )}
             </AnimatePresence>
           </div>
-
-          {/* Footer */}
-          {!showSuccess && (
-            <div className="flex gap-3 border-t bg-slate-50 p-6">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={step === 1 || isSubmitting}
-                className="w-auto"
-              >
-                <ChevronLeft className="mr-2 size-4" />
-                Back
-              </Button>
-              <div className="flex-1" />
-              {step < 5 ? (
-                <Button
-                  onClick={handleNext}
-                  disabled={isSubmitting}
-                  className="bg-gold text-gold-foreground hover:bg-gold/90"
-                >
-                  Continue
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="bg-gold text-gold-foreground hover:bg-gold/90"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                </Button>
-              )}
-            </div>
-          )}
         </div>
+
+        {/* Footer - Fixed */}
+        {!showSuccess && (
+          <div className="flex gap-3 border-t bg-slate-50 p-6">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={step === 1 || isSubmitting}
+              className="w-auto"
+            >
+              <ChevronLeft className="mr-2 size-4" />
+              Back
+            </Button>
+            <div className="flex-1" />
+            {step < 5 ? (
+              <Button
+                onClick={handleNext}
+                disabled={isSubmitting}
+                className="bg-gold text-gold-foreground hover:bg-gold/90"
+              >
+                Continue
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="bg-gold text-gold-foreground hover:bg-gold/90"
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Application'}
+              </Button>
+            )}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   )
