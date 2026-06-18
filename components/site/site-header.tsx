@@ -262,12 +262,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-2">
 
 
-            {/* LOGO IMAGE ON RIGHT */}
-            <img
-              src="/images/logo.jpeg"
-              alt="AMTMTI logo"
-              className="h-10 w-10 object-contain"
-            />
+           
 
 
             <ThemeToggle className="hidden sm:inline-flex" />
