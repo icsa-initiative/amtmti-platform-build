@@ -8,8 +8,9 @@ export async function GET() {
   if (!admin) return new NextResponse('Unauthorized', { status: 401 })
 
   // Use service role key to bypass RLS for admin
+  // Use the service‑role key if it exists; otherwise fall back to the regular client.
   const supabase = await createClient({
-    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || undefined,
   })
 
   const { data, error } = await supabase

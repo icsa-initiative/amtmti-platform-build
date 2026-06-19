@@ -17,6 +17,8 @@ interface ContactMessage {
   status: string
 }
 
+import { useRouter } from 'next/navigation';
+
 export default function AdminMessagesPage() {
   const router = useRouter()
   const [messages, setMessages] = useState<ContactMessage[]>([])
