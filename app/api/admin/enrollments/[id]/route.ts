@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const { id } = await params
-    const supabase = (await createClient()) as any
+    const supabase = (await createClient({ supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY })) as any
 
     const { data, error } = await supabase
       .from('enrollment_applications')
@@ -60,7 +60,7 @@ export async function PATCH(
     const body = await req.json()
 
     const { id } = await params
-    const supabase = (await createClient()) as any
+    const supabase = (await createClient({ supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY })) as any
 
     const { data, error } = await supabase
       .from('enrollment_applications')

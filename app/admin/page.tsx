@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { adminLogoutAction } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
-import { FileText, Mail, Users } from 'lucide-react'
-import { toast } from 'sonner'
+import { FileText, Mail, Users, Loader2 } from 'lucide-react'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -26,22 +25,43 @@ export default function AdminPage() {
       setLoading(true)
       const [enrollmentsRes, messagesRes, applicationsRes] = await Promise.all([
         fetch('/api/admin/enrollments'),
-        fetch('/api/contact/list'),
-        fetch('/api/membership/list'),
+        fetch('/api/admin/contact/list'),
+        fetch('/api/admin/membership/list'),
       ])
+
+      // Temporary variables to hold the raw API arrays for logging later
+      let enrollmentsData: any[] | undefined
+      let messagesData: any[] | undefined
+      let applicationsData: any[] | undefined
 
       if (enrollmentsRes.ok) {
         const enrollments = await enrollmentsRes.json()
+        console.log('Enrollments API response:', enrollments)
+        enrollmentsData = enrollments
+        console.log('Enrollments count:', enrollments.length)
         setStats((s) => ({ ...s, enrollments: enrollments.length }))
       }
       if (messagesRes.ok) {
         const messages = await messagesRes.json()
+        console.log('Messages API response:', messages)
+        messagesData = messages
+        console.log('Messages count:', messages.length)
         setStats((s) => ({ ...s, messages: messages.length }))
       }
       if (applicationsRes.ok) {
         const applications = await applicationsRes.json()
+        console.log('Membership API response:', applications)
+        applicationsData = applications
+        console.log('Memberships count:', applications.length)
         setStats((s) => ({ ...s, applications: applications.length }))
       }
+
+      // Log the aggregate values that were just set
+      console.log('Stats being set:', {
+        enrollments: enrollmentsData?.length ?? 0,
+        messages: messagesData?.length ?? 0,
+        applications: applicationsData?.length ?? 0,
+      })
     } catch (error) {
       console.error('Error loading stats:', error)
     } finally {
@@ -58,6 +78,7 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
+          <Button variant="outline" onClick={() => router.back()}>← Back</Button>
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Manage the AMTMTI platform</p>

@@ -13,10 +13,11 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const supabase = (await createClient()) as any
+    const supabase = (await createClient({ supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY })) as any
 
     // Fetch all enrollment applications
-    const { data, error } = await supabase
+    console.log('Fetching enrollment applications')
+      const { data, error } = await supabase
       .from('enrollment_applications')
       .select('*')
       .order('created_at', { ascending: false })
