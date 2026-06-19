@@ -1,6 +1,7 @@
 import { MembershipPlans } from './membership-plans'
 import { SectionHeading } from '@/components/site/section-heading'
 
+import { MemberStatistics } from '@/components/marketing/member-statistics'
 export function MembershipSection() {
   return (
     <section className="bg-muted/40 py-20">
@@ -13,6 +14,8 @@ export function MembershipSection() {
         <div className="mt-12">
           <MembershipPlans />
         </div>
+        {/* Statistics Card */}
+        <MemberStatistics />
       </div>
     </section>
   )

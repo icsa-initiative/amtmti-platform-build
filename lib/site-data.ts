@@ -23,6 +23,7 @@ export const MAIN_NAV = [
   { label: 'News', href: '/news' },
   { label: 'E-Learning', href: '/portal' },
   { label: 'Membership', href: '/membership' },
+  { label: 'Members', href: '/members' },
   { label: 'Contact', href: '/contact' },
 ] as const
 

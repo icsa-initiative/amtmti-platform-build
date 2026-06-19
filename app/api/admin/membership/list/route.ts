@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import { isAdminAuthenticated } from '@/lib/admin-auth'
 
 export async function GET() {
+  // DEBUG – verify Supabase service role key & URL
+  console.log('SERVICE ROLE PRESENT:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+  console.log('SUPABASE URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+
   // Ensure admin is authenticated
   const admin = await isAdminAuthenticated()
   if (!admin) {
@@ -13,7 +17,15 @@ export async function GET() {
   const supabase = await createClient({
     supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   })
-  const { data, error } = await supabase
+  // Debug – count rows (head request)
+const countQuery = await supabase
+  .from('membership_applications')
+  .select('*', { count: 'exact', head: true })
+console.log('SERVICE ROLE PRESENT (admin list):', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+console.log('TABLE membership_applications count:', countQuery.count)
+console.log('TABLE membership_applications count error:', countQuery.error)
+
+const { data, error } = await supabase
     .from('membership_applications')
     .select('*')
     .order('created_at', { ascending: false })
@@ -24,5 +36,8 @@ export async function GET() {
   }
 
   console.log('API /admin/membership/list returning', data)
-  return NextResponse.json(data)
+  // Debug – log raw query result
+console.log('RAW membership_applications DATA:', data)
+console.log('RAW membership_applications ERROR:', error)
+return NextResponse.json(data)
 }
