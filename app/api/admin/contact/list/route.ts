@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { isAdminAuthenticated } from '@/lib/admin-auth'
 
 export async function GET() {
@@ -9,9 +9,7 @@ export async function GET() {
 
   // Use service role key to bypass RLS for admin
   // Use the service‑role key if it exists; otherwise fall back to the regular client.
-  const supabase = await createClient({
-    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY || undefined,
-  })
+  const supabase = createAdminClient()
 
   const { data, error } = await supabase
     .from('contact_messages')

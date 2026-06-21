@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Clock, GraduationCap, Monitor, ArrowRight } from 'lucide-react'
-import { type Program, formatKsh } from '@/lib/programs-data'
+import { type Program, formatUsd } from '@/lib/programs-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -63,7 +63,7 @@ export function ProgramCard({ program }: { program: Program }) {
         </div>
         <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
           <span className="font-heading text-base font-bold text-primary">
-            {formatKsh(program.feesKsh)}
+            {formatUsd(program.feesKsh)}
           </span>
           <Button asChild size="sm" variant="ghost" className="text-primary hover:text-primary">
             <Link href={`/programs/${program.slug}`}>

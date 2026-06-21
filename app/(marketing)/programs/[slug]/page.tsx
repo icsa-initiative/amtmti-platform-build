@@ -11,7 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { getAllProgramSlugs, getProgramBySlug, getPrograms } from '@/lib/programs-db'
-import { formatKsh } from '@/lib/programs-data'
+import { formatUsd } from '@/lib/programs-data'
 import { PageHero } from '@/components/site/page-hero'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -74,7 +74,7 @@ export default async function ProgramDetailPage({
             {program.level}
           </Badge>
           <span className="font-heading text-2xl font-bold text-gold">
-            {formatKsh(program.feesKsh)}
+            {formatUsd(program.feesKsh)}
           </span>
         </div>
       </PageHero>
@@ -140,7 +140,7 @@ export default async function ProgramDetailPage({
                     Tuition
                   </p>
                   <p className="font-heading text-xl font-bold text-primary">
-                    {formatKsh(program.feesKsh)}
+                    {formatUsd(program.feesKsh)}
                   </p>
                 </div>
               </div>

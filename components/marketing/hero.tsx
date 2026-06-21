@@ -50,10 +50,8 @@ export function Hero() {
           </h1>
           <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-primary-foreground/80">
             AMTMTI delivers world-class education and skills enhancement
-            training in medication therapy management — including professional
-            development courses, certificates, diplomas, and postgraduate
-            diplomas — designed for pharmacists, clinicians, and the wider
-            African healthcare workforce.
+            training in medication therapy management, professional
+            development courses, certificates, and other courses.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="bg-gold text-gold-foreground hover:bg-gold/90">

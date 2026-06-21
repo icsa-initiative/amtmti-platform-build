@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { verifyAdminToken } from '@/lib/admin-token'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,7 +12,7 @@ export async function GET(req: NextRequest) {
     //   )
     // }
 
-    const supabase = (await createClient({ supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY })) as any
+    const supabase = createAdminClient()
 
     // Fetch all enrollment applications
     console.log('Fetching enrollment applications')

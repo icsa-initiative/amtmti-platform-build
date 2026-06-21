@@ -17,7 +17,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadStats()
+    loadStats();
   }, [])
 
   async function loadStats() {
@@ -147,6 +147,12 @@ export default function AdminPage() {
               <Button variant="outline" className="w-full justify-start">
                 <Users className="mr-2 h-4 w-4" />
                 View Applications
+              </Button>
+            </Link>
+            <Link href="/admin/programs">
+              <Button variant="outline" className="w-full justify-start">
+                <FileText className="mr-2 h-4 w-4" />
+                View Programs
               </Button>
             </Link>
           </div>

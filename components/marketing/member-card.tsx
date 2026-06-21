@@ -57,32 +57,3 @@ export function MemberCard({ member, onClick }: Props) {
     </Link>
   );
 }
-  const initials = member.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-
-  return (
-    <Card
-      className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={onClick}
-    >
-      <div className="flex items-center gap-4">
-        <Avatar size="lg">
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <h3 className="font-medium text-foreground">{member.name}</h3>
-          {member.organization && (
-            <p className="text-sm text-muted-foreground">{member.organization}</p>
-          )}
-          {member.country && (
-            <p className="text-xs text-muted-foreground">{member.country}</p>
-          )}
-        </div>
-        <Badge variant="secondary" className="ml-auto whitespace-nowrap">{member.tier}</Badge>
-      </div>
-    </Card>
-  )
-}
